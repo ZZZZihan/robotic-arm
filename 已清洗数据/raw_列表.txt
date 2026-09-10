@@ -1,0 +1,14 @@
+total 676048
+drwxr-xr-x@ 13 xuzihan  staff        416 Sep 10 11:41 .
+drwxr-xr-x@  6 xuzihan  staff        192 Sep 10 11:41 ..
+-rw-r--r--@  1 xuzihan  staff     368791 Sep 10 11:41 86e063488de381e433ab92168f048469.jpg
+-rw-r--r--@  1 xuzihan  staff     332639 Sep 10 11:41 88592e2c4d5609abbbaf537ff7bb6dc1.jpg
+-rw-r--r--@  1 xuzihan  staff   39154480 Sep 10 11:41 C#例程源代码及库文件.rar
+-rw-r--r--@  1 xuzihan  staff   45220945 Sep 10 11:41 Demo - VC++总线卡点位和插补运动.rar
+-rw-r--r--@  1 xuzihan  staff    3716545 Sep 10 11:41 EtherCAT - 总线初始化-点位-Jog运动(C#).rar
+-rw-r--r--@  1 xuzihan  staff  113311147 Sep 10 11:41 MOVIFT智能码垛.zip
+-rw-r--r--@  1 xuzihan  staff   68659764 Sep 10 11:41 SV630N系列伺服用户手册-CN-B06-网络型.PDF
+-rw-r--r--@  1 xuzihan  staff   62712633 Sep 10 11:41 VC++例程源代码及库文件.rar
+-rw-r--r--@  1 xuzihan  staff     482058 Sep 10 11:41 da01cf719ff1b4dd9e3544876891511c.jpg
+-rw-r--r--@  1 xuzihan  staff    3393721 Sep 10 11:41 博派科技EthCAT-I32-O16-MPG-GAS2总线运动控制卡用户手册V1.0.pdf
+-rw-r--r--@  1 xuzihan  staff    8757478 Sep 10 11:41 测试升级工具-2025-5-5.rar

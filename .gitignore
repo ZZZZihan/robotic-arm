@@ -1,0 +1,84 @@
+# Operating-system and editor files
+.DS_Store
+.AppleDouble
+.LSOverride
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.kdbx
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# .NET / Visual Studio / C and C++ build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.pdb
+*.ilk
+*.pch
+*.sdf
+*.ipch
+*.tlog
+*.lastbuildstate
+*.cache
+*.log
+*.tmp
+
+# Generated or vendor-delivered binaries and archives
+*.dll
+*.exe
+*.lib
+*.exp
+*.zip
+*.rar
+*.7z
+*.pdf
+*.PDF
+/*.jpg
+/*.jpeg
+/*.png
+
+# Local intake and derived vendor-material directories.
+# Originals remain on disk, but are not part of the source repository.
+/已清洗数据/raw/
+/已清洗数据/unpacked/
+/已清洗数据/archives/
+
+# Local deployment outputs and evidence.
+/thinkbook-deploy/evidence/
+/thinkbook-deploy/remote.py
+/thinkbook-deploy/thinkbook-demo.zip
+/thinkbook-deploy/README.md
+/thinkbook-deploy/payload/README.md
+/thinkbook-deploy/payload/app/
+/thinkbook-deploy/payload/docs/
+/thinkbook-deploy/payload/manifest.json
+/thinkbook-deploy/payload/scripts/
+/thinkbook-deploy/payload/source/**/bin/
+/thinkbook-deploy/payload/source/**/obj/
+
+# Deployment scripts that contain machine-specific network operations.
+/thinkbook-deploy/scripts/configure-network.ps1
+/thinkbook-deploy/scripts/rollback-network.ps1
+/thinkbook-deploy/scripts/verify.ps1

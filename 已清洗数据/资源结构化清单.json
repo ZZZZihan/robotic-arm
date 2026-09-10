@@ -1,0 +1,113 @@
+{
+  "version": "clean-v1",
+  "generated_at": "2026-09-10",
+  "workspace": "/Users/xuzihan/Documents/Projects/机械臂",
+  "policy": {
+    "compression_tool": "bsdtar",
+    "fallback_tool": "unzip",
+    "prefer_for_other_agents": "直接读已清洗数据/unpacked 内的目录，不重复解压。"
+  },
+  "items": [
+    {
+      "source_file": "C#例程源代码及库文件.rar",
+      "source_size_mb": 37.34,
+      "description": "C# 版 MultiCard 总线卡点位/插补/测试示例与 C# 动态库。",
+      "status": "已解压",
+      "extracted_to": {
+        "路径_1": "已清洗数据/unpacked",
+        "来源_备份": "已清洗数据/raw"
+      }
+    },
+    {
+      "source_file": "VC++例程源代码及库文件.rar",
+      "source_size_mb": 59.81,
+      "description": "VC++ 版 MultiCard 示例工程与头文件/库文件（32/64 位）。",
+      "status": "已解压",
+      "extracted_to": {
+        "路径_1": "已清洗数据/unpacked",
+        "来源_备份": "已清洗数据/raw"
+      }
+    },
+    {
+      "source_file": "Demo - VC++总线卡点位和插补运动.rar",
+      "source_size_mb": 43.13,
+      "description": "VC++ 总线卡点位/插补运动演示项目，带工程与编译产物。",
+      "status": "已解压",
+      "extracted_to": {
+        "路径_1": "已清洗数据/unpacked",
+        "来源_备份": "已清洗数据/raw"
+      }
+    },
+    {
+      "source_file": "EtherCAT - 总线初始化-点位-Jog运动(C#).rar",
+      "source_size_mb": 3.54,
+      "description": "EtherCAT 总线初始化、点位读取与 Jog 运动 C# 示例。",
+      "status": "已解压",
+      "extracted_to": {
+        "路径_1": "已清洗数据/unpacked",
+        "来源_备份": "已清洗数据/raw"
+      }
+    },
+    {
+      "source_file": "测试升级工具-2025-5-5.rar",
+      "source_size_mb": 8.35,
+      "description": "测试与升级工具包，包含测试可执行程序、运行日志与配置。",
+      "status": "已解压",
+      "extracted_to": {
+        "路径_1": "已清洗数据/unpacked",
+        "来源_备份": "已清洗数据/raw"
+      }
+    },
+    {
+      "source_file": "MOVIFT智能码垛.zip",
+      "source_size_mb": 108.06,
+      "description": "智能码垛项目材料：模板、说明文档、版本文件和运行包。",
+      "status": "已解压",
+      "extracted_to": {
+        "路径_1": "已清洗数据/unpacked",
+        "来源_备份": "已清洗数据/raw"
+      }
+    },
+    {
+      "source_file": "SV630N系列伺服用户手册-CN-B06-网络型.PDF",
+      "source_size_mb": 65.48,
+      "description": "伺服电机参数、接口、调试指令和网络配置说明。",
+      "status": "原文件"
+    },
+    {
+      "source_file": "博派科技EthCAT-I32-O16-MPG-GAS2总线运动控制卡用户手册V1.0.pdf",
+      "source_size_mb": 3.24,
+      "description": "博派 Total bus controller 用户手册：EtherCAT 控制卡说明。",
+      "status": "原文件"
+    },
+    {
+      "source_file": "86e063488de381e433ab92168f048469.jpg",
+      "source_size_mb": 0.35,
+      "description": "素材图片（示意/现场照片，当前无明确来源标识）。",
+      "status": "原文件"
+    },
+    {
+      "source_file": "88592e2c4d5609abbbaf537ff7bb6dc1.jpg",
+      "source_size_mb": 0.32,
+      "description": "素材图片（示意/现场照片）。",
+      "status": "原文件"
+    },
+    {
+      "source_file": "da01cf719ff1b4dd9e3544876891511c.jpg",
+      "source_size_mb": 0.46,
+      "description": "素材图片（示意/现场照片）。",
+      "status": "原文件"
+    },
+    {
+      "source_file": "已清洗数据/unpacked",
+      "description": "标准化解压后工作目录：给 Agent 扫码读源码、配置和程序的统一入口。",
+      "status": "ready",
+      "file_count": 821,
+      "size_mb": 981.08
+    }
+  ],
+  "notes": [
+    "Nested zip（版本文件/*.zip）已保留为原始文件，便于按需在 Windows/7-Zip 做深度解包。",
+    "当前解包优先保留源码与可运行文件，未主动删除任何中间 build 文件。"
+  ]
+}

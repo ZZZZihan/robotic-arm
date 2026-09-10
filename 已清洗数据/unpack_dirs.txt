@@ -1,0 +1,20 @@
+已清洗数据/unpacked
+已清洗数据/unpacked/sp
+已清洗数据/unpacked/MultiCard-Visual C#
+已清洗数据/unpacked/MultiCard-Visual C#/EthBoardTest_2016
+已清洗数据/unpacked/MultiCard-Visual C#/ipch
+已清洗数据/unpacked/动态库（C#）
+已清洗数据/unpacked/动态库（C#）/64位动态库
+已清洗数据/unpacked/动态库（C#）/32位动态库
+已清洗数据/unpacked/VC++例程源代码及库文件
+已清洗数据/unpacked/VC++例程源代码及库文件/VC++动态库及头文件
+已清洗数据/unpacked/VC++例程源代码及库文件/例程源代码（基于VS2010）
+已清洗数据/unpacked/测试升级工具-2025-5-5
+已清洗数据/unpacked/测试升级工具-2025-5-5/RunTimeLog
+已清洗数据/unpacked/Demo - VC++总线卡点位和插补运动
+已清洗数据/unpacked/Demo - VC++总线卡点位和插补运动/Demo
+已清洗数据/unpacked/Demo - VC++总线卡点位和插补运动/x64
+已清洗数据/unpacked/Demo - VC++总线卡点位和插补运动/ipch
+已清洗数据/unpacked/Demo - VC++总线卡点位和插补运动/Debug
+已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动
+已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo
