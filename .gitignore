@@ -82,3 +82,13 @@ env/
 /thinkbook-deploy/scripts/configure-network.ps1
 /thinkbook-deploy/scripts/rollback-network.ps1
 /thinkbook-deploy/scripts/verify.ps1
+
+# Curated handoff materials explicitly approved for this private repository.
+!/materials/manuals/Bopai-EtherCAT-Controller-V1.0.pdf
+!/materials/manuals/Inovance-SV630N-CN-B06.pdf
+!/materials/sdk/bopai-ethercat-x64/MultiCard.dll
+!/materials/sdk/bopai-ethercat-x64/MultiCardCS.dll
+!/materials/sdk/bopai-ethercat-x64/MultiCardCLR.dll
+
+# Fresh offline dashboard builds; source and pinned libraries stay elsewhere.
+/.artifacts/

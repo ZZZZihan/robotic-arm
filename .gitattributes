@@ -11,3 +11,7 @@
 *.jpg binary
 *.jpeg binary
 *.pdf binary
+
+# Keep curated third-party originals byte-identical to their manifest hashes.
+/materials/vendor-reference/** -text
+/materials/sdk/** binary

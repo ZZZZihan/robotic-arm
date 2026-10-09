@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-10-09",
+  "provenance": "Files supplied by the project owner; curated without content edits. Original local files are preserved.",
+  "artifacts": [
+    {
+      "path": "materials/manuals/Bopai-EtherCAT-Controller-V1.0.pdf",
+      "kind": "manual",
+      "source_path": "博派科技EthCAT-I32-O16-MPG-GAS2总线运动控制卡用户手册V1.0.pdf",
+      "original_name": "博派科技EthCAT-I32-O16-MPG-GAS2总线运动控制卡用户手册V1.0.pdf",
+      "size_bytes": 3393721,
+      "sha256": "5C9B1EF33FEA5309AAAC8E670AF48CAEC692C59EE7A41CDAB86CBF545C4F8911",
+      "pages": 100
+    },
+    {
+      "path": "materials/manuals/Inovance-SV630N-CN-B06.pdf",
+      "kind": "manual",
+      "source_path": "SV630N系列伺服用户手册-CN-B06-网络型.PDF",
+      "original_name": "SV630N系列伺服用户手册-CN-B06-网络型.PDF",
+      "size_bytes": 68659764,
+      "sha256": "2DD466BFB7AEF562B0AB55C7A8D2A3B1BF181B64B9FC3F138A47AF4CB891F9A7",
+      "pages": 595
+    },
+    {
+      "path": "materials/sdk/bopai-ethercat-x64/MultiCard.dll",
+      "kind": "runtime-library",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/bin/x64/Debug/MultiCard.dll",
+      "original_name": "MultiCard.dll",
+      "size_bytes": 7354880,
+      "sha256": "E403B3BA37CF0B14CEF22034F425AB096D0B77178CF091BD6E913E950628B7A4"
+    },
+    {
+      "path": "materials/sdk/bopai-ethercat-x64/MultiCardCS.dll",
+      "kind": "runtime-library",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/bin/x64/Debug/MultiCardCS.dll",
+      "original_name": "MultiCardCS.dll",
+      "size_bytes": 80896,
+      "sha256": "5DF9249C01FDBAFC9420FB25718A4C8A90DE84F148AAD0F4F190EC6B72F5EED7"
+    },
+    {
+      "path": "materials/sdk/bopai-ethercat-x64/MultiCardCLR.dll",
+      "kind": "runtime-library",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/bin/x64/Debug/MultiCardCLR.dll",
+      "original_name": "MultiCardCLR.dll",
+      "size_bytes": 152064,
+      "sha256": "ACD906B6729C33EA566C5FBC5E9EDE24B59466C439A4763FD8635A1DD3F51739"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/CSharpDemo.csproj",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/CSharpDemo.csproj",
+      "original_name": "CSharpDemo.csproj",
+      "size_bytes": 6273,
+      "sha256": "48866B7358561DB31920575BDBEE292895F065C85290E67E63030E311AA72B95"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Form1.Designer.cs",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Form1.Designer.cs",
+      "original_name": "Form1.Designer.cs",
+      "size_bytes": 12665,
+      "sha256": "6302558D714F4AAE5C26E5B0DB12B4909073E19AC0AD2E5F3B5B057ABA893A35"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Form1.cs",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Form1.cs",
+      "original_name": "Form1.cs",
+      "size_bytes": 10466,
+      "sha256": "D9B3E9114C100CD0C5A055E131011887921FC31749E8929EAF323246854E0922"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Form1.resx",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Form1.resx",
+      "original_name": "Form1.resx",
+      "size_bytes": 5817,
+      "sha256": "4363CD7D5B8671C72442CE1A1BFC10D64EBD24B2D718B54BD4FCD025E4967298"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Program.cs",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Program.cs",
+      "original_name": "Program.cs",
+      "size_bytes": 491,
+      "sha256": "DA507E1442FDDF01B3857C8BB8C27E0927DA59B02EF9DE21CC51A430E591BC0D"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Properties/AssemblyInfo.cs",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Properties/AssemblyInfo.cs",
+      "original_name": "AssemblyInfo.cs",
+      "size_bytes": 1352,
+      "sha256": "AA9A990C3CF1FC601158D6FB06A65ACA14F7576406103AFEE42B65E433A666EA"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Properties/Resources.Designer.cs",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Properties/Resources.Designer.cs",
+      "original_name": "Resources.Designer.cs",
+      "size_bytes": 2872,
+      "sha256": "8373187DA121BE1DA4711FDD3BBAFFA5C1EA48887E01AEBEF8C4E41A968905B7"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Properties/Resources.resx",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Properties/Resources.resx",
+      "original_name": "Resources.resx",
+      "size_bytes": 5612,
+      "sha256": "66B5EBD1B0FC73F041BA669CE2184F6F471D5E3524EFA34CA31233E9F5395262"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Properties/Settings.Designer.cs",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Properties/Settings.Designer.cs",
+      "original_name": "Settings.Designer.cs",
+      "size_bytes": 1097,
+      "sha256": "A7C9C65F4FF29A7F3A6182DB470B6E290DE69810F678D9978FABAB8F60048E2A"
+    },
+    {
+      "path": "materials/vendor-reference/EtherCATDemo/Properties/Settings.settings",
+      "kind": "vendor-example",
+      "source_path": "已清洗数据/unpacked/EtherCAT - 总线初始化-点位-Jog运动/CSharpDemo/Properties/Settings.settings",
+      "original_name": "Settings.settings",
+      "size_bytes": 249,
+      "sha256": "F6A4290723520CADDD934B8800319C7CA6CC7EEAB647059EC89B7A13B1513265"
+    }
+  ]
+}
