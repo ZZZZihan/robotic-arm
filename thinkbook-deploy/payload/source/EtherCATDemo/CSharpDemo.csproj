@@ -90,6 +90,10 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="Axis2Motion.cs" />
+    <Compile Include="Form1.Axis2.cs" />
+    <Compile Include="Form1.Dashboard.cs" />
+    <Compile Include="DashboardWidgets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

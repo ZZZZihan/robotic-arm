@@ -21,23 +21,9 @@ namespace CSharpDemo
         {
             InitializeComponent();
 
-            comboBoxAxisSel.Items.Add("轴1");
-            comboBoxAxisSel.Items.Add("轴2");
-            comboBoxAxisSel.Items.Add("轴3");
-            comboBoxAxisSel.Items.Add("轴4");
-            comboBoxAxisSel.Items.Add("轴5");
-            comboBoxAxisSel.Items.Add("轴6");
-            comboBoxAxisSel.Items.Add("轴7");
-            comboBoxAxisSel.Items.Add("轴8");
-            comboBoxAxisSel.Items.Add("轴9");
-            comboBoxAxisSel.Items.Add("轴10");
-            comboBoxAxisSel.Items.Add("轴11");
-            comboBoxAxisSel.Items.Add("轴12");
-            comboBoxAxisSel.Items.Add("轴13");
-            comboBoxAxisSel.Items.Add("轴14");
-            comboBoxAxisSel.Items.Add("轴15");
-            comboBoxAxisSel.Items.Add("轴16");
+            for (int axis = 1; axis <= 4; axis++) comboBoxAxisSel.Items.Add("轴" + axis);
             comboBoxAxisSel.SelectedIndex = 0;
+            InitializeAxis2Controls();
 
             Timer timer1 = new Timer();
             timer1.Enabled = true;
@@ -45,16 +31,8 @@ namespace CSharpDemo
             timer1.Tick += new System.EventHandler(this.timer1_Tick);
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private MultiCardCS.MultiCardCS.TAllSysStatusDataSX CreateStatusBuffer()
         {
-            if (!cardOpened)
-            {
-                label_InitStatus.Text = "未连接控制卡";
-                labelPrfPos.Text = "--";
-                label_SlaveCount.Text = "--";
-                return;
-            }
-            int iRes = 0;
             MultiCardCS.MultiCardCS.TAllSysStatusDataSX m_AllSysStatusData;
 
             m_AllSysStatusData.lAxisEncPos = new int[16];
@@ -82,24 +60,43 @@ namespace CSharpDemo
 
             m_AllSysStatusData.lMPGEncPos = 0;
 
-            //8轴及以下控制卡用这个
-            //iRes = MultiCardCS_1.GA_GetAllSysStatus(ref m_AllSysStatusData);
+            return m_AllSysStatusData;
+        }
 
-            //9~16轴控制卡用这个
-            iRes = MultiCardCS_1.GA_GetAllSysStatusSX(ref m_AllSysStatusData);
-
-            labelPrfPos.Text = Convert.ToString(m_AllSysStatusData.lAxisPrfPos[comboBoxAxisSel.SelectedIndex]);
-
-        
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (!cardOpened)
+            {
+                label_InitStatus.Text = "未连接控制卡";
+                labelPrfPos.Text = "--";
+                label_SlaveCount.Text = "--";
+                InvalidateDashboardSample();
+                return;
+            }
+            MultiCardCS.MultiCardCS.TAllSysStatusDataSX status = CreateStatusBuffer();
+            int iRes;
+            try { iRes = MultiCardCS_1.GA_GetAllSysStatusSX(ref status); }
+            catch (Exception error)
+            {
+                HandleAxis2Sample(-1, status);
+                ShowResult(error.Message, true);
+                return;
+            }
+            if (!HandleAxis2Sample(iRes, status)) { labelPrfPos.Text = "反馈无效"; return; }
+            labelPrfPos.Text = Convert.ToString(status.lAxisPrfPos[comboBoxAxisSel.SelectedIndex]);
+            if (axis2Motion.Active) return;
 
             short pCutInitSlaveNum = 0;
             short pMode = 0; ;
             short pModeStep = 0;
             string strText;
 
-            MultiCardCS_1.GA_ECatGetInitStep(ref pCutInitSlaveNum, ref pMode, ref pModeStep);
+            int initCode;
+            try { initCode = MultiCardCS_1.GA_ECatGetInitStep(ref pCutInitSlaveNum, ref pMode, ref pModeStep); }
+            catch (Exception error) { label_InitStatus.Text = "初始化状态读取失败：" + error.Message; return; }
+            if (initCode != 0) { label_InitStatus.Text = "初始化状态读取失败：" + initCode; return; }
 
-            strText = string.Format("正在初始化第{0:G}个站点,当前模式{1:G}，子步{2:G}", pCutInitSlaveNum, pMode, pModeStep);
+            strText = pCutInitSlaveNum < 0 ? "总线未就绪（站号 " + pCutInitSlaveNum + "）" : string.Format("正在初始化第{0:G}个站点,当前模式{1:G}，子步{2:G}", pCutInitSlaveNum, pMode, pModeStep);
 
             if (0 == pCutInitSlaveNum)
             {
@@ -111,6 +108,11 @@ namespace CSharpDemo
         private void buttonOpenCard_Click(object sender, EventArgs e)
         {
             int iRes = 0;
+            if (cardOpened) return;
+            foreach (System.Net.IPEndPoint endpoint in System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners())
+            {
+                if (endpoint.Port == 60000) { ShowResult("UDP 60000正被占用，请先正常关闭其他控制程序。", true); return; }
+            }
 
             //GA_Open的4个参数依次是卡号、PC端IP地址、PC端端口号、板卡端IP地址、板卡端端口号
             //如注释部分，同时打开3个板卡代码如下
@@ -120,13 +122,14 @@ namespace CSharpDemo
             //iRes = MultiCardCS_3.GA_Open(3, "192.168.0.200", 60002, "192.168.0.3", 60002);
 
             cardOpened = (iRes == 0);
+            RefreshAxis2Controls();
             if (iRes == 0)
             {
-                MessageBox.Show("打开板卡成功！");
+                ShowResult("控制卡连接已打开，等待实时反馈。", false);
             }
             else
             {
-                MessageBox.Show("打开板卡失败！");
+                ShowResult("GA_Open 返回 " + iRes, true);
             }
         }
 
@@ -143,7 +146,8 @@ namespace CSharpDemo
         private void button1_Click(object sender, EventArgs e)
         {
             //MultiCardCS_1.GA_ECatLoadPDOConfig(0);
-            MultiCardCS_1.GA_ECatInit();
+            try { Require("GA_ECatInit", MultiCardCS_1.GA_ECatInit()); ShowResult("总线初始化请求已发送，请等待状态显示初始化完成。", false); }
+            catch (Exception error) { ShowResult(error.Message, true); }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -172,11 +176,21 @@ namespace CSharpDemo
 
         private void buttonAxisOn_Click(object sender, EventArgs e)
         {
-            MultiCardCS_1.GA_AxisOn((short)(comboBoxAxisSel.SelectedIndex + 1));
+            if (!cardOpened || axis2Motion.Active) return;
+            try
+            {
+                short axis = (short)(comboBoxAxisSel.SelectedIndex + 1);
+                Require("GA_AxisOn(轴" + axis + ")", MultiCardCS_1.GA_AxisOn(axis));
+                if (axis == 2) enabledStable.Reset();
+                ShowResult("轴" + axis + "使能请求返回0；请等待反馈稳定后再移动。", false);
+            }
+            catch (Exception error) { ShowResult(error.Message, true); }
         }
 
         private void buttonJogN_MouseDown(object sender, MouseEventArgs e)
         {
+            if (!cardOpened || axis2Motion.Active || comboBoxAxisSel.SelectedIndex == 1) return;
+            if (!dashboardValid) { ShowResult("暂无有效反馈，未启动点动。", true); return; }
             short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
             int iRes = 0;
             MultiCardCS.MultiCardCS.TJogPrm m_JogPrm;
@@ -205,12 +219,15 @@ namespace CSharpDemo
 
         private void buttonJogN_MouseUp(object sender, MouseEventArgs e)
         {
+            if (!cardOpened) return;
             //停止所有轴和坐标系
             MultiCardCS_1.GA_Stop(0XFFFFF, 0XFFFFF);
         }
 
         private void buttonJogP_MouseDown(object sender, MouseEventArgs e)
         {
+            if (!cardOpened || axis2Motion.Active || comboBoxAxisSel.SelectedIndex == 1) return;
+            if (!dashboardValid) { ShowResult("暂无有效反馈，未启动点动。", true); return; }
             short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
             int iRes = 0;
             MultiCardCS.MultiCardCS.TJogPrm m_JogPrm;
@@ -239,6 +256,7 @@ namespace CSharpDemo
 
         private void buttonJogP_MouseUp(object sender, MouseEventArgs e)
         {
+            if (!cardOpened) return;
             //停止所有轴和坐标系
             MultiCardCS_1.GA_Stop(0XFFFFF, 0XFFFFF);
         }
@@ -285,6 +303,8 @@ namespace CSharpDemo
 
         private void button5_Click_1(object sender, EventArgs e)
         {
+            if (!cardOpened || axis2Motion.Active) return;
+            if (comboBoxAxisSel.SelectedIndex == 1) { StartAxis2(-1); return; }
             short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
 
             MultiCardCS_1.GA_SetTrapPosAndUpdate(nAxisNum, -100000, 20, 1, 1, 0, 0, 0);
@@ -292,6 +312,8 @@ namespace CSharpDemo
 
         private void button4_Click_1(object sender, EventArgs e)
         {
+            if (!cardOpened || axis2Motion.Active) return;
+            if (comboBoxAxisSel.SelectedIndex == 1) { StartAxis2(1); return; }
             short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
 
             MultiCardCS_1.GA_SetTrapPosAndUpdate(nAxisNum, 100000, 20, 1, 1, 0, 0, 0);
