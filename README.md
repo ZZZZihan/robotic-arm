@@ -1,6 +1,6 @@
 # 机械臂四轴操作台 · Robotic Arm Lab
 
-**交接入口，更新于 2026-10-10。** 当前维护的是 Windows 上的 C# WinForms 四轴操作台，通过博派 EtherCAT 控制卡控制四个软件轴。当前源码为“使能保险版”，包含 10 月 10 日合并审查时补充的点动关窗保护，已重新完成 Windows 离线构建和回归；原应用代码基线是 [`ac636ff`](https://github.com/ZZZZihan/robotic-arm/commit/ac636ff8fe91201a5976f294febd556085f8bbb4)。现场桌面入口仍是 10 月 9 日交付版，本次修订尚未切换到现场使用。
+**交接入口，更新于 2026-10-10。** 当前维护的是 Windows 上的 C# WinForms 四轴操作台，通过博派 EtherCAT 控制卡控制四个软件轴。当前源码为“使能保险版”，包含 10 月 10 日合并审查时补充的点动关窗保护，已重新完成 Windows 离线构建和回归；原应用代码基线是 [`ac636ff`](https://github.com/ZZZZihan/robotic-arm/commit/ac636ff8fe91201a5976f294febd556085f8bbb4)。10 月 10 日 13:30（北京时间）已将源码提交 [`1d66dd4`](https://github.com/ZZZZihan/robotic-arm/commit/1d66dd4388e1f0e4d5e8f3d73be2c96eedddf80a) 对应的已测试程序交付到 ThinkBook，并更新桌面入口；本次交付未启动 App，最新版本的实机使用仍待操作者验收。
 
 轴2是丝杆升降轴，现场操作者已确认 **正向向上、反向向下**。界面用电机圈数控制轴2的相对移动；圈数和转速支持直接键入、Ctrl+A 重填和上下按钮微调。轴1、3、4保留点动和原来的绝对定位入口。
 
@@ -16,7 +16,7 @@
 | 查看现场已知配置、程序结构、排障和待办 | [交接说明](docs/HANDOFF.md) |
 | 查看具体界面用法和轴2修复记录 | [操作台使用说明](thinkbook-deploy/payload/source/EtherCATDemo/README-dashboard.md) |
 | 查控制卡、SV630N、SDK 与原始示例 | [资料目录与手册导航](materials/README.md) |
-| 复核已执行的构建、测试及现场反馈边界 | [最新合并审查与回归记录](docs/verification/2026-10-10-merge-review.md)、[使能保险版历史交付记录](docs/verification/2026-10-09-enable-insurance.md)、[输入修复版历史验证记录](docs/verification/2026-10-09-dashboard.md) |
+| 复核已执行的构建、测试及现场反馈边界 | [ThinkBook 最新交付记录](docs/verification/2026-10-10-thinkbook-handoff.md)、[合并审查与回归记录](docs/verification/2026-10-10-merge-review.md)、[使能保险版历史交付记录](docs/verification/2026-10-09-enable-insurance.md)、[输入修复版历史验证记录](docs/verification/2026-10-09-dashboard.md) |
 | 了解资料来源、同步范围和版权归属 | [仓库范围](docs/REPOSITORY_SCOPE.md)、[第三方资料说明](materials/NOTICE.md) |
 
 ## 2. 当前做到哪里
@@ -30,6 +30,7 @@
 | 运动核心检查 | 20 项通过 | 假适配器测试，不连接 SDK/控制卡 |
 | 初始化与保险检查 | 33 项通过 | 假适配器检查，未接硬件 |
 | 界面与输入检查 | 26 组通过，包括保险/急停、点动松手与失联处理、停止确认前关窗拦截、键盘输入 | 2026-10-10 Windows 离线界面回归 |
+| ThinkBook 程序文件与桌面入口 | 新版文件及快捷方式已更新，10 月 9 日旧版保留 | 文件哈希与快捷方式回读通过；部署前后 App 进程和 UDP 60000 监听均为 0，未启动 App |
 | 使能保险版现场体验 | 等待操作者使用该版本确认 | 尚未完成最新版本的实机验收 |
 | 毫米换算、软限位、回零与完整机械标定 | 未完成 | 不得把电机圈数当成升降毫米 |
 
@@ -79,14 +80,18 @@ verification-result.json   构建结果、检查数、EXE 与 SDK 校验值
 
 ## 4. 现场运行与版本切换
 
-ThinkBook 上已交付的使能保险版（记录见 [使能保险版交付记录](docs/verification/2026-10-09-enable-insurance.md)）：
+ThinkBook 当前桌面入口对应 2026-10-10 交付的使能保险版（记录见 [ThinkBook 交付记录](docs/verification/2026-10-10-thinkbook-handoff.md)）：
 
 - 桌面入口：**机械臂-四轴操作台**。
 - 窗口标题：**机械臂 · 四轴操作台 · 使能保险版**。
-- 发布路径：`C:\RobotArmDemo\releases\four-axis-insurance-20261009-180249\built\app\CSharpDemo.exe`。
-- 该次 EXE SHA-256：`923A82EFA30DBE292FD17218445FEABC01626AF31767D960F642420C29ECFDB2`。重新构建的 EXE 不要求与此二进制哈希相同；应记录各自源码和构建结果。
+- 发布路径：`C:\RobotArmDemo\releases\four-axis-handoff-20261010-1d66dd4\app\CSharpDemo.exe`。
+- 程序源码提交：`1d66dd4388e1f0e4d5e8f3d73be2c96eedddf80a`。
+- 该次 EXE SHA-256：`6E69787008315CBA29233E942B4852F93E08C39C8A31B201DC1BC7983A01012E`。重新构建的 EXE 不要求与此二进制哈希相同；应记录各自源码和构建结果。
+- 快捷方式回读确认目标和图标为上述 EXE，工作目录为该发布目录的 `app`，启动参数为空。
 
-发布路径是 2026-10-09 的交付记录，不保证以后仍是桌面入口。10 月 10 日关窗保护修订只在独立验证目录完成构建和离线回归，尚未替换这个发布目录或快捷方式。窗口标题和程序集版本号未变，确认实际路径及 EXE 哈希后再操作。
+本次交付校验通过了 5 个 App 文件（EXE、PDB 和三份 SDK DLL）、19 个已测试源文件及 25 个源码/证据包文件；部署前后 `CSharpDemo` 进程数和 UDP 60000 监听数均为 0。文件与桌面入口已更新，未启动 App、连接控制卡或执行硬件动作。窗口标题和程序集版本号未变，操作者实际使用前仍需核对路径及 EXE 哈希。
+
+10 月 9 日旧版完整保留在 `C:\RobotArmDemo\releases\four-axis-insurance-20261009-180249\built\app\`，旧 EXE SHA-256 为 `923A82EFA30DBE292FD17218445FEABC01626AF31767D960F642420C29ECFDB2`；旧 EXE 及三份 DLL 在本次交付前后校验值不变。旧桌面快捷方式的二进制备份位于 `C:\RobotArmDemo\releases\four-axis-handoff-20261010-1d66dd4\rollback\机械臂-四轴操作台.lnk`。历史交付过程见 [10 月 9 日记录](docs/verification/2026-10-09-enable-insurance.md)。
 
 1. 四轴停止、升降负载可靠保持时，正常关闭旧控制程序。**同一时刻只运行一个控制程序**，旧 Demo、网页服务与新 App 会争用 UDP 60000。
 2. 使用已有桌面入口，或把新构建的整个 `app` 文件夹放到一个新的发布目录，再手动打开其中的 `CSharpDemo.exe`。不要只复制 EXE，也不要覆盖运行中的版本。
@@ -152,6 +157,8 @@ thinkbook-deploy/payload/reference/VCppDemo/  原有 C++ 参考源码
 本机还保留早期网页诊断、Python 控制算法原型、课程、完整厂商包和原始现场记录，**并非全部纳入本次交接快照**。旧资料中的 `src/robot_arm_mvp`、旧 Web 终端和本机解包路径不能视为当前仓库已提供的构建依赖。需要接续这些独立方向时，应单独整理其源码和验收记录。
 
 ## 8. 下一位维护者先做什么
+
+本次交接标签 `handoff-2026-10-10` 固定交付快照，包含交接文档、离线验证和 ThinkBook 文件交付记录；部署程序的源码提交为 `1d66dd4`。仓库继续供接手人开发维护，后续修改从该快照及 `main` 的实际状态接续。
 
 1. 用本仓库重新构建，保存 `verification-result.json`，确认 20 项核心检查、33 项保险检查、26 组界面检查通过。
 2. 请现场操作者确认运行的是使能保险版，并实际验收键入圈数/转速、上升/下降和停止后再次启动的使用体验。
