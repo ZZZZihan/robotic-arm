@@ -52,7 +52,7 @@ namespace CSharpDemo
         {
             SuspendLayout();
             Controls.Clear();
-            Text = "机械臂 · 四轴操作台 · 输入修复版";
+            Text = "机械臂 · 四轴操作台 · 使能保险版";
             Font = DashboardTheme.Body;
             AutoScaleMode = AutoScaleMode.None;
             BackColor = DashboardTheme.Background;
@@ -73,16 +73,23 @@ namespace CSharpDemo
             TableLayoutPanel header = Grid(4, 1);
             header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 190));
-            header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 170));
-            header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 8));
+            header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
+            header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 132));
             header.Controls.Add(UiLabel("机械臂  /  四轴操作台", 20, true), 0, 0);
             connectionBadge = UiLabel("●  未连接控制卡", 10, true);
             connectionBadge.ForeColor = DashboardTheme.Muted;
             header.Controls.Add(connectionBadge, 1, 0);
-            buttonOpenCard.Text = "连接控制卡";
-            StyleButton(buttonOpenCard, true);
-            buttonOpenCard.Margin = new Padding(0, 12, 0, 12);
-            header.Controls.Add(buttonOpenCard, 2, 0);
+            buttonOpenCard.Visible = false;
+            StyleButton(buttonAxisOn, true);
+            buttonAxisOn.Text = "使能保险";
+            buttonAxisOn.Margin = new Padding(4, 12, 4, 12);
+            header.Controls.Add(buttonAxisOn, 2, 0);
+            emergencyStop = new Button { Name = "emergencyStop", Text = "急停", AccessibleName = "急停全部运动，锁定运动保险", CausesValidation = false };
+            StyleButton(emergencyStop, true);
+            emergencyStop.BackColor = DashboardTheme.Danger;
+            emergencyStop.Margin = new Padding(4, 12, 0, 12);
+            emergencyStop.Click += delegate { EmergencyStopFromDashboard(); };
+            header.Controls.Add(emergencyStop, 3, 0);
             root.Controls.Add(header, 0, 0);
 
             TableLayoutPanel cards = Grid(4, 1);
@@ -121,8 +128,9 @@ namespace CSharpDemo
             operationTitle = UiLabel("轴2 · 升降控制", 17, true);
             operationState = UiLabel("等待连接", 9, false); operationState.ForeColor = DashboardTheme.Muted;
             commandHeader.Controls.Add(operationTitle, 0, 0); commandHeader.Controls.Add(operationState, 0, 1);
-            StyleButton(buttonAxisOn, false); buttonAxisOn.Text = "使能当前轴";
-            commandHeader.Controls.Add(buttonAxisOn, 1, 0); commandHeader.SetRowSpan(buttonAxisOn, 2);
+            Label insuranceHint = UiLabel("当前轴单独使能", 9, false);
+            insuranceHint.ForeColor = DashboardTheme.Muted;
+            commandHeader.Controls.Add(insuranceHint, 1, 0); commandHeader.SetRowSpan(insuranceHint, 2);
             command.Controls.Add(commandHeader, 0, 0);
 
             Panel modes = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0) };
@@ -222,32 +230,26 @@ namespace CSharpDemo
             detailTabs = new TabControl { Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 6), Padding = new Point(20, 5) };
             TabPage events = new TabPage("操作记录") { BackColor = Color.White, Padding = new Padding(10) };
             historyBox = new TextBox { Dock = DockStyle.Fill, ReadOnly = true, Multiline = true, BorderStyle = BorderStyle.None,
-                BackColor = Color.White, ForeColor = DashboardTheme.Muted, ScrollBars = ScrollBars.Vertical, Font = DashboardTheme.Body, Text = "尚无操作记录。程序不会自动连接、使能或运动。" };
+                BackColor = Color.White, ForeColor = DashboardTheme.Muted, ScrollBars = ScrollBars.Vertical, Font = DashboardTheme.Body, Text = "打开程序后自动连接并检查总线。运动前请点击当前轴的使能保险。" };
             events.Controls.Add(historyBox); detailTabs.TabPages.Add(events);
             TabPage diagnostics = new TabPage("诊断与维护") { BackColor = Color.White, Padding = new Padding(10) };
             TableLayoutPanel tools = Grid(3, 1);
             tools.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40)); tools.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24)); tools.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 36));
-            TableLayoutPanel bus = Grid(3, 2);
-            for (int i = 0; i < 3; i++) bus.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
-            bus.RowStyles.Add(new RowStyle(SizeType.Absolute, 38)); bus.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            button1.Text = "初始化总线"; button2.Text = "读取总线"; button3.Text = "从站数量";
-            foreach (Button b in new Button[] { button1, button2, button3 }) { StyleButton(b, false); b.Font = DashboardTheme.Body; }
-            bus.Controls.Add(button1, 0, 0); bus.Controls.Add(button2, 1, 0); bus.Controls.Add(button3, 2, 0);
+            TableLayoutPanel bus = Grid(1, 3);
+            bus.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            bus.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); bus.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); bus.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
+            foreach (Button b in new Button[] { button1, button2, button3, buttonOpenY0, buttonCloseY0 }) b.Visible = false;
+            bus.Controls.Add(UiLabel("系统与总线", 10, true), 0, 0);
             label_InitStatus.Dock = DockStyle.Fill; label_InitStatus.AutoSize = false; label_InitStatus.ForeColor = DashboardTheme.Muted;
-            bus.Controls.Add(label_InitStatus, 0, 1); bus.SetColumnSpan(label_InitStatus, 2);
-            label_SlaveCount.Dock = DockStyle.Fill; label_SlaveCount.AutoSize = false; label_SlaveCount.ForeColor = DashboardTheme.Muted; bus.Controls.Add(label_SlaveCount, 2, 1);
+            bus.Controls.Add(label_InitStatus, 0, 1);
+            label_SlaveCount.Dock = DockStyle.Fill; label_SlaveCount.AutoSize = false; label_SlaveCount.ForeColor = DashboardTheme.Muted; bus.Controls.Add(label_SlaveCount, 0, 2);
             tools.Controls.Add(bus, 0, 0);
-            TableLayoutPanel io = Grid(2, 2);
-            io.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50)); io.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            io.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); io.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
-            io.Controls.Add(UiLabel("数字输出 Y0", 9, false), 0, 0); io.SetColumnSpan(io.GetControlFromPosition(0, 0), 2);
-            StyleButton(buttonOpenY0, false); StyleButton(buttonCloseY0, false); buttonOpenY0.Text = "打开"; buttonCloseY0.Text = "关闭";
-            io.Controls.Add(buttonOpenY0, 0, 1); io.Controls.Add(buttonCloseY0, 1, 1); tools.Controls.Add(io, 1, 0);
+            tools.Controls.Add(UiLabel("急停后保持保险锁定。\r\n确认停止并排除异常后，\r\n重新点击使能保险。", 9, false), 1, 0);
             feedbackLabel.Dock = DockStyle.Fill; feedbackLabel.Font = new Font("Microsoft YaHei UI", 8F); feedbackLabel.ForeColor = DashboardTheme.Muted;
             tools.Controls.Add(feedbackLabel, 2, 0); diagnostics.Controls.Add(tools); detailTabs.TabPages.Add(diagnostics);
             TabPage help = new TabPage("使用说明") { BackColor = Color.White, Padding = new Padding(10) };
             TableLayoutPanel helpLayout = Grid(1, 2); helpLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); helpLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
-            helpLayout.Controls.Add(UiLabel("轴2：↑ 上升为正向，↓ 下降为反向；填写电机圈数和转速后点击一次。圈数不是升降毫米。\r\n轴1、3、4：按住点动，松开停止。软件停止依赖通信，不能代替物理急停。", 9, false), 0, 0);
+            helpLayout.Controls.Add(UiLabel("启动自动准备总线。选择轴后点击使能保险，再操作运动；保险只允许当前轴运动。\r\n轴2：↑ 上升，↓ 下降。轴1、3、4：按住点动，松开停止。软件急停依赖通信，现场物理急停仍须可用。", 9, false), 0, 0);
             logLocation = UiLabel("日志：" + logPath, 8, false); logLocation.ForeColor = DashboardTheme.Muted; helpLayout.Controls.Add(logLocation, 0, 1);
             help.Controls.Add(helpLayout); detailTabs.TabPages.Add(help); root.Controls.Add(detailTabs, 0, 3);
             resultLabel.Visible = false;
@@ -268,16 +270,20 @@ namespace CSharpDemo
             operationState.ForeColor = dashboardValid ? DashboardTheme.StateColor(dashboardStatus[selected]) : DashboardTheme.Muted;
             connectionBadge.Text = !cardOpened ? "●  未连接控制卡" : dashboardValid ? "●  通信正常" : dashboardReadFailed ? "●  反馈异常" : "●  等待有效反馈";
             connectionBadge.ForeColor = dashboardReadFailed ? DashboardTheme.Danger : dashboardValid ? DashboardTheme.Accent : DashboardTheme.Muted;
-            buttonOpenCard.Text = cardOpened ? "已连接" : "连接控制卡";
             bool ready = cardOpened && dashboardValid && !axis2Motion.Active && !feedbackBusy;
+            bool motionAllowed = ready && InsuranceAllowsMotion();
             decimal turns, rpm; string inputError;
             bool inputsValid = TryReadAxis2Inputs(out turns, out rpm, out inputError);
-            button4.Enabled = button5.Enabled = ready && (!lift || (inputsValid && turns > 0));
-            legacyNegative.Enabled = legacyPositive.Enabled = ready && !lift;
-            bool axisEnabled = dashboardValid && (dashboardStatus[selected] & Axis2Motion.EnabledBit) != 0;
-            buttonAxisOn.Text = axisEnabled ? "当前轴已使能" : "使能当前轴";
-            buttonAxisOn.Enabled = ready && !axisEnabled;
-            button1.Enabled = buttonOpenY0.Enabled = buttonCloseY0.Enabled = ready;
+            button4.Enabled = button5.Enabled = motionAllowed && (!lift || (inputsValid && turns > 0));
+            buttonJogN.Enabled = (motionAllowed && !lift) || (legacyJogActive && heldJogButton == buttonJogN);
+            buttonJogP.Enabled = (motionAllowed && !lift) || (legacyJogActive && heldJogButton == buttonJogP);
+            legacyNegative.Enabled = legacyPositive.Enabled = motionAllowed && !lift;
+                        bool insured = operationSafety != null && operationSafety.AuthorizedAxis == selected + 1;
+            bool emergency = operationSafety != null && operationSafety.EmergencyLatched;
+            buttonAxisOn.Text = emergency ? "重新打开保险" : insured ? (operationSafety.AwaitingEnableFeedback ? "等待使能反馈" : "保险已开启") : "使能保险";
+            buttonAxisOn.Enabled = ready && operationSafety != null && operationSafety.BusReady && (!insured || emergency);
+            if (emergency) { operationState.Text = "急停锁定 · 确认停稳后重新打开保险"; operationState.ForeColor = DashboardTheme.Danger; }
+            else if (ready && !insured) operationState.Text = "运动保险关闭 · 请点击使能保险";
             axis2Stop.Text = lift ? "停止轴2" : "停止全部运动";
             for (int i = 0; i < 4; i++)
             {
@@ -296,9 +302,14 @@ namespace CSharpDemo
             feedbackState.ForeColor = dashboardValid ? DashboardTheme.StateColor(dashboardStatus[selected]) : DashboardTheme.Muted;
             foreach (Button button in new Button[] { buttonOpenCard, button4, button5, buttonJogN, buttonJogP })
                 PaintEnabledButton(button, true, false);
-            foreach (Button button in new Button[] { buttonAxisOn, legacyNegative, legacyPositive, button1, button2, button3, buttonOpenY0, buttonCloseY0 })
+            PaintEnabledButton(buttonAxisOn, true, false);
+            foreach (Button button in new Button[] { legacyNegative, legacyPositive, button1, button2, button3, buttonOpenY0, buttonCloseY0 })
                 PaintEnabledButton(button, false, false);
             PaintEnabledButton(axis2Stop, false, true);
+            // The stop stays available even with invalid input, stale feedback or failed initialization.
+            emergencyStop.Enabled = true;
+            emergencyStop.BackColor = DashboardTheme.Danger;
+            emergencyStop.ForeColor = Color.White;
         }
 
         private static void PaintEnabledButton(Button button, bool primary, bool stop)
@@ -309,6 +320,7 @@ namespace CSharpDemo
 
         private void UpdateDashboardSample(MultiCardCS.MultiCardCS.TAllSysStatusDataSX status)
         {
+            if (operationSafety != null) operationSafety.Observe(ToOperationSnapshot(status), sessionClock.ElapsedMilliseconds);
             Array.Copy(status.lAxisEncPos, dashboardEncoder, 4);
             Array.Copy(status.lAxisPrfPos, dashboardPlanned, 4);
             Array.Copy(status.lAxisStatus, dashboardStatus, 4);
@@ -319,6 +331,7 @@ namespace CSharpDemo
 
         private void InvalidateDashboardSample()
         {
+            if (operationSafety != null) operationSafety.Invalidate();
             dashboardValid = false;
             dashboardReadFailed = cardOpened;
             RefreshDashboard();

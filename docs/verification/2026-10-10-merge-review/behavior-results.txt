@@ -1,0 +1,21 @@
+PASS 120rpm equals 2 motor rev/s; bounded absolute target
+PASS negative relative step and next move use fresh position
+PASS zero/negative/excessive turns and rpm rejected before reads
+PASS repeat click during active move cannot queue another command
+PASS axis disabled refuses without auto-enable
+PASS every limit/alarm/estop/running/homing bit refuses
+PASS other axes running refuses
+PASS drive not operation-enabled refuses
+PASS scaling or motor change refuses
+PASS brake settling and preflight drift refuse
+PASS 32bit target overflow rejected at both boundaries
+PASS failed motion command attempts stop and retains active until stopped
+PASS failed stop cannot falsely report stopped
+PASS manual stop releases only on stopped feedback; next step uses stopped position
+PASS external all-axis stop waits for feedback and releases interrupted target
+PASS stop when idle does not block a later explicit move
+PASS stop does not bypass disabled or following-error checks on restart
+PASS idle but wrong target is not completion
+PASS runtime fault and bad feedback are surfaced
+PASS CoE abort is invalid even when SDK returns zero
+PASS 20 behavior tests; fake adapter only, no SDK loaded.

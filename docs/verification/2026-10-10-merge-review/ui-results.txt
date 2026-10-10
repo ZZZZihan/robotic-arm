@@ -1,0 +1,27 @@
+PASS UI one insurance and fixed emergency, with automatic setup controls removed
+PASS UI four-card selection, axis-specific units, disconnected actions
+PASS UI positive-up and negative-down labels match existing direction handlers
+PASS UI startup defaults and normal-window layout
+PASS UI compact minimum-window layout
+PASS UI nonzero duration preview and zero-input reset without card access
+PASS UI typed integer/decimal drafts and caret survive refresh in both fields
+PASS UI Ctrl+A replacement and Enter commit without motion
+PASS UI invalid/blank/out-of-range drafts persist and refuse stale or clamped values
+PASS UI arrow adjustment after typed input and no controller access
+PASS UI feedback mapping across axis changes
+PASS UI axis selection locks during observed motion
+PASS UI alarm and stale-feedback display
+PASS UI communication loss and explicit recovery notice
+PASS UI error notice and history
+PASS UI diagnostics layout
+PASS UI every motion handler refuses before manual insurance, with no SDK call
+PASS UI single-axis insurance requires new enabled feedback
+PASS UI held jog survives running refresh and lost capture requests all-axis stop through fake
+PASS UI emergency stays available through invalid input and lost feedback, with persistent lock
+PASS UI failed stop is visible, successful retry permits explicit recovery, axis changes revoke insurance
+PASS UI jog feedback loss requests all-axis emergency and locks insurance through fake
+PASS UI failed jog stop blocks repeated close and fake stop retry retains pending confirmation
+PASS UI running, failed, incomplete and cached feedback keep close and new motion blocked
+PASS UI fresh complete stationary feedback permits offline close and explicit insurance recovery
+PASS UI capture-loss stop cannot consume its earlier refresh sample as stop confirmation
+PASS UI verification; no controller connection or command requested.

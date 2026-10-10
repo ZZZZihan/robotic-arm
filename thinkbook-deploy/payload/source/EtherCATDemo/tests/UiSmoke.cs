@@ -15,6 +15,175 @@ internal static class UiSmoke
     {
         return typeof(Form1).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(form, args);
     }
+    private static void SetField(Form1 form, string name, object value)
+    {
+        typeof(Form1).GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(form, value);
+    }
+    private sealed class FakeOperationCard : IOperationSafetyCard
+    {
+        public OperationSnapshot Data;
+        public int Enables, Stops, Reads;
+        public bool FailStop;
+        public void Open() { }
+        public OperationSnapshot ReadSnapshot() { Reads++; return Data; }
+        public short ReadSlaveCount() { return 4; }
+        public short ReadInitStep() { return 0; }
+        public void InitializeBus() { throw new Exception("UI fake must reuse ready bus"); }
+        public void EnableAxis(short axis) { Enables++; }
+        public void StopAll() { Stops++; if (FailStop) throw new InvalidOperationException("simulated stop failure"); }
+    }
+
+    private static void CheckInsurance(Form1 form)
+    {
+        MultiCardCS.MultiCardCS.TAllSysStatusDataSX sample = (MultiCardCS.MultiCardCS.TAllSysStatusDataSX)Call(form, "CreateStatusBuffer");
+        for (int i = 0; i < 4; i++) { sample.lAxisEncPos[i] = sample.lAxisPrfPos[i] = 1000 * i; sample.lAxisStatus[i] = 0xA00; }
+        FakeOperationCard fake = new FakeOperationCard { Data = new OperationSnapshot { Status = sample.lAxisStatus, Planned = sample.lAxisPrfPos, Encoder = sample.lAxisEncPos } };
+        OperationSafety safety = new OperationSafety(fake); safety.BeginInitialization(0);
+        SetField(form, "operationSafety", safety); SetField(form, "operationCard", fake); SetField(form, "cardOpened", true);
+        ComboBox axes = (ComboBox)Field(form, "comboBoxAxisSel"); axes.SelectedIndex = 1;
+        ((NumericUpDown)Field(form, "axis2Turns")).Value = 1M;
+        Call(form, "UpdateDashboardSample", sample);
+        Button insurance = (Button)Field(form, "buttonAxisOn"), stop = (Button)Field(form, "emergencyStop");
+        Assert(insurance.Enabled && !((Button)Field(form, "button4")).Enabled, "enabled drive bypasses manual insurance");
+        Call(form, "button4_Click_1", null, EventArgs.Empty);
+        Call(form, "button5_Click_1", null, EventArgs.Empty);
+        axes.SelectedIndex = 0; Call(form, "UpdateDashboardSample", sample);
+        Call(form, "buttonJogN_MouseDown", null, new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        Call(form, "buttonJogP_MouseDown", null, new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        Call(form, "button4_Click_1", null, EventArgs.Empty); Call(form, "button5_Click_1", null, EventArgs.Empty);
+        Assert(fake.Enables == 0 && !((Button)Field(form, "buttonJogP")).Enabled, "legacy handler auto-enabled or bypassed insurance");
+        Console.WriteLine("PASS UI every motion handler refuses before manual insurance, with no SDK call");
+        axes.SelectedIndex = 1; Call(form, "UpdateDashboardSample", sample);
+        insurance.PerformClick();
+        Assert(fake.Enables == 1 && insurance.Text.Contains("等待使能反馈") && !((Button)Field(form, "button4")).Enabled, "enable return bypassed feedback wait");
+        Call(form, "UpdateDashboardSample", sample);
+        Assert(insurance.Text == "保险已开启" && ((Button)Field(form, "button4")).Enabled, "fresh enabled feedback did not open insurance");
+        Console.WriteLine("PASS UI single-axis insurance requires new enabled feedback");
+        axes.SelectedIndex = 0; Call(form, "UpdateDashboardSample", sample);
+        insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+        Button held = (Button)Field(form, "buttonJogP");
+        SetField(form, "legacyJogActive", true); SetField(form, "heldJogButton", held); held.Capture = true;
+        sample.lAxisStatus[0] |= OperationSafety.RunningBits;
+        Call(form, "UpdateDashboardSample", sample);
+        Assert(held.Enabled && !((Button)Field(form, "buttonJogN")).Enabled, "running sample disabled held jog or allowed another jog");
+        held.Capture = false;
+        Assert(fake.Stops == 1 && !(bool)Field(form, "legacyJogActive"), "lost mouse capture failed to stop jog");
+        sample.lAxisStatus[0] &= ~OperationSafety.RunningBits;
+        Call(form, "HandleAxis2Sample", 0, sample);
+        Assert(((Button)Field(form, "buttonJogP")).Enabled, "ordinary jog stop revoked valid insurance");
+        Console.WriteLine("PASS UI held jog survives running refresh and lost capture requests all-axis stop through fake");
+        axes.SelectedIndex = 1; Call(form, "UpdateDashboardSample", sample); insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+        Draft(form, (NumericUpDown)Field(form, "axis2Turns"), "invalid");
+        Assert(stop.Enabled && !stop.CausesValidation, "invalid input blocks emergency stop");
+        stop.PerformClick();
+        Assert(fake.Stops == 2 && safety.EmergencyLatched && !((Button)Field(form, "button4")).Enabled, "emergency failed to lock all movement");
+        Call(form, "UpdateDashboardSample", sample);
+        Assert(safety.EmergencyLatched && insurance.Text == "重新打开保险", "background sample unlocked emergency");
+        Call(form, "InvalidateDashboardSample");
+        Assert(stop.Enabled && safety.EmergencyLatched, "invalid feedback disabled emergency or cleared latch");
+        Console.WriteLine("PASS UI emergency stays available through invalid input and lost feedback, with persistent lock");
+        fake.FailStop = true; stop.PerformClick();
+        Assert(fake.Stops == 3 && safety.EmergencyLatched && ((Label)Field(form, "noticeLabel")).Text.Contains("物理急停"), "failed stop hidden or unlocked motion");
+        fake.FailStop = false; stop.PerformClick();
+        Draft(form, (NumericUpDown)Field(form, "axis2Turns"), "1"); Call(form, "UpdateDashboardSample", sample);
+        insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+        Assert(!safety.EmergencyLatched && fake.Enables == 4, "explicit recovery failed");
+        axes.SelectedIndex = 2;
+        Assert(safety.AuthorizedAxis == 0 && !((Button)Field(form, "buttonJogP")).Enabled, "axis change retained permission");
+        Console.WriteLine("PASS UI failed stop is visible, successful retry permits explicit recovery, axis changes revoke insurance");
+        Call(form, "UpdateDashboardSample", sample); insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+        SetField(form, "legacyJogActive", true); SetField(form, "heldJogButton", held);
+        int stopsBeforeLoss = fake.Stops;
+        Call(form, "HandleAxis2Sample", -7, sample);
+        Assert(fake.Stops == stopsBeforeLoss + 1 && safety.EmergencyLatched && !(bool)Field(form, "legacyJogActive"), "jog feedback loss did not request stop and latch insurance");
+        Console.WriteLine("PASS UI jog feedback loss requests all-axis emergency and locks insurance through fake");
+        SetField(form, "cardOpened", false); Call(form, "InvalidateDashboardSample");
+    }
+
+    private static bool ClosingIsCancelledOffline(Form1 form)
+    {
+        // Even a regression that reaches the close branch must never call GA_Close.
+        bool opened = (bool)Field(form, "cardOpened");
+        SetField(form, "cardOpened", false);
+        try
+        {
+            FormClosingEventArgs closing = new FormClosingEventArgs(CloseReason.UserClosing, false);
+            Call(form, "Axis2FormClosing", null, closing);
+            return closing.Cancel;
+        }
+        finally { SetField(form, "cardOpened", opened); }
+    }
+
+    private static void CheckLegacyCloseGuard(Form1 form)
+    {
+        MultiCardCS.MultiCardCS.TAllSysStatusDataSX sample = (MultiCardCS.MultiCardCS.TAllSysStatusDataSX)Call(form, "CreateStatusBuffer");
+        for (int i = 0; i < 4; i++) sample.lAxisStatus[i] = 0xA00;
+        FakeOperationCard fake = new FakeOperationCard { Data = new OperationSnapshot { Status = sample.lAxisStatus, Planned = sample.lAxisPrfPos, Encoder = sample.lAxisEncPos } };
+        OperationSafety safety = new OperationSafety(fake); safety.BeginInitialization(0);
+        SetField(form, "operationSafety", safety); SetField(form, "operationCard", fake);
+        SetField(form, "legacyJogActive", false); SetField(form, "legacyMotionPending", false); SetField(form, "legacyStopRequested", false);
+        SetField(form, "cardOpened", true);
+        try
+        {
+            ((ComboBox)Field(form, "comboBoxAxisSel")).SelectedIndex = 0;
+            Call(form, "UpdateDashboardSample", sample);
+            Button insurance = (Button)Field(form, "buttonAxisOn"), held = (Button)Field(form, "buttonJogP");
+            insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+            SetField(form, "legacyJogActive", true); SetField(form, "legacyMotionPending", true); SetField(form, "heldJogButton", held);
+            fake.FailStop = true; Call(form, "StopLegacyJog");
+            Assert(fake.Stops == 2 && !(bool)Field(form, "legacyJogActive") && (bool)Field(form, "legacyMotionPending")
+                && (bool)Field(form, "legacyStopRequested"), "failed jog stop discarded pending motion");
+            Assert(ClosingIsCancelledOffline(form) && ClosingIsCancelledOffline(form), "repeated close bypassed failed jog stop");
+            fake.FailStop = false; Call(form, "StopLegacyJog");
+            Assert(fake.Stops == 3 && (bool)Field(form, "legacyMotionPending"), "jog stop retry failed or command return cleared pending motion");
+            Console.WriteLine("PASS UI failed jog stop blocks repeated close and fake stop retry retains pending confirmation");
+
+            sample.lAxisStatus[0] |= OperationSafety.RunningBits;
+            Assert((bool)Call(form, "HandleAxis2Sample", 0, sample) && ClosingIsCancelledOffline(form), "running feedback allowed close");
+            sample.lAxisStatus[0] &= ~OperationSafety.RunningBits;
+            Assert(!(bool)Call(form, "HandleAxis2Sample", -7, sample) && ClosingIsCancelledOffline(form), "failed feedback allowed close");
+            MultiCardCS.MultiCardCS.TAllSysStatusDataSX incomplete = sample;
+            incomplete.lAxisPrfPos = new int[2]; incomplete.lAxisEncPos = new int[2];
+            Assert(!(bool)Call(form, "HandleAxis2Sample", 0, incomplete) && ClosingIsCancelledOffline(form), "incomplete four-axis feedback cleared pending stop");
+            Call(form, "UpdateDashboardSample", sample);
+            Call(form, "EmergencyStopFromDashboard");
+            Assert(fake.Stops == 4 && safety.StopRequestSucceeded, "successful fake emergency retry did not permit explicit recovery");
+            insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+            int reads = fake.Reads;
+            Assert(!(bool)Call(form, "PrepareMotion") && fake.Reads == reads && (bool)Field(form, "legacyMotionPending"), "pending stop allowed new motion or card preflight");
+            Assert(!((Button)Field(form, "buttonJogP")).Enabled && ClosingIsCancelledOffline(form), "cached stationary display unlocked pending stop");
+            Console.WriteLine("PASS UI running, failed, incomplete and cached feedback keep close and new motion blocked");
+
+            Assert((bool)Call(form, "HandleAxis2Sample", 0, sample) && !(bool)Field(form, "legacyMotionPending")
+                && !(bool)Field(form, "legacyStopRequested") && !ClosingIsCancelledOffline(form), "fresh complete stationary feedback did not release close guard");
+            insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+            Assert((bool)Call(form, "PrepareMotion") && ((Button)Field(form, "buttonJogP")).Enabled, "new stopped feedback prevented explicit motion recovery");
+            Console.WriteLine("PASS UI fresh complete stationary feedback permits offline close and explicit insurance recovery");
+
+            SetField(form, "legacyJogActive", true); SetField(form, "legacyMotionPending", true); SetField(form, "heldJogButton", held);
+            held.Capture = true;
+            Label actual = (Label)Field(form, "actualValue");
+            EventHandler loseCapture = delegate { held.Capture = false; };
+            actual.TextChanged += loseCapture;
+            try
+            {
+                sample.lAxisEncPos[0] = sample.lAxisPrfPos[0] = 1;
+                Assert((bool)Call(form, "HandleAxis2Sample", 0, sample), "same-frame capture-loss sample failed");
+            }
+            finally { actual.TextChanged -= loseCapture; }
+            Assert(fake.Stops == 5 && !(bool)Field(form, "legacyJogActive") && (bool)Field(form, "legacyMotionPending")
+                && ClosingIsCancelledOffline(form), "sample received before capture-loss stop confirmed that same stop");
+            Call(form, "HandleAxis2Sample", 0, sample);
+            Assert(!(bool)Field(form, "legacyMotionPending") && !ClosingIsCancelledOffline(form), "next stationary sample failed to release capture-loss stop");
+            Console.WriteLine("PASS UI capture-loss stop cannot consume its earlier refresh sample as stop confirmation");
+        }
+        finally
+        {
+            SetField(form, "cardOpened", false); SetField(form, "legacyJogActive", false);
+            SetField(form, "heldJogButton", null); SetField(form, "legacyMotionPending", false); SetField(form, "legacyStopRequested", false);
+            Call(form, "InvalidateDashboardSample");
+        }
+    }
     private static void Assert(bool valid, string message) { if (!valid) throw new Exception(message); }
     private static TextBox Editor(NumericUpDown input)
     {
@@ -107,7 +276,7 @@ internal static class UiSmoke
     private static void Run(string screenshot)
     {
         Application.EnableVisualStyles();
-        using (Form1 form = new Form1())
+        using (Form1 form = new Form1(false))
         {
             Assert(!(bool)Field(form, "cardOpened"), "startup opened card");
             Assert(((NumericUpDown)Field(form, "axis2Rpm")).Value == 120M, "speed changed");
@@ -116,6 +285,11 @@ internal static class UiSmoke
             Assert(axes.Items.Count == 4 && axes.SelectedIndex == 1, "four-axis selection");
             form.StartPosition = FormStartPosition.Manual; form.Location = Point.Empty;
             form.ClientSize = new Size(1000, 700); form.Show(); Application.DoEvents();
+            Assert(((Button)Field(form, "emergencyStop")).Visible && ((Button)Field(form, "emergencyStop")).Enabled, "emergency stop missing or disabled");
+            foreach (string name in new string[] { "buttonOpenCard", "button1", "button2", "button3", "buttonOpenY0", "buttonCloseY0" })
+                Assert(!((Button)Field(form, name)).Visible, "extra preparation control visible: " + name);
+            Assert(((Button)Field(form, "buttonAxisOn")).Text == "使能保险", "single insurance missing");
+            Console.WriteLine("PASS UI one insurance and fixed emergency, with automatic setup controls removed");
             AxisStatusCard[] cards = (AxisStatusCard[])Field(form, "axisCards");
             for (int i = 0; i < 4; i++)
             {
@@ -183,6 +357,8 @@ internal static class UiSmoke
             form.PerformLayout(); Application.DoEvents(); CheckVisibleBounds(form);
             Render(form, Path.Combine(Path.GetDirectoryName(screenshot), "ui-diagnostics.png"));
             Console.WriteLine("PASS UI diagnostics layout");
+            CheckInsurance(form);
+            CheckLegacyCloseGuard(form);
             Assert(!(bool)Field(form, "cardOpened"), "UI tests connected controller");
             form.Close();
         }
