@@ -79,11 +79,15 @@
 
 使用 [`build-dashboard.ps1`](../thinkbook-deploy/scripts/build-dashboard.ps1) 构建。每次输出包含完整 `app`、源码快照和验证结果，不改维护源码、不改运行中的程序、不调用设备。构建与离线检查不要求关闭正在运行的控制程序；真正切换控制程序时再由现场操作者停稳并正常关闭旧版本。
 
-当前已交付的使能保险版路径和哈希见根 README 及[使能保险版交付记录](verification/2026-10-09-enable-insurance.md)。输入修复版为 `four-axis-input-20261009-140000`。其上一个四轴方向版为 `four-axis-lift-20261009-134342`，再早的圈数测试版为 `axis2-turns-20261009-122203`，均位于 ThinkBook 的 `C:\RobotArmDemo\releases\`。这些是历史交付目录，是否还存在应现场核对。
+当前交付版程序为 `C:\RobotArmDemo\releases\four-axis-handoff-20261010-1d66dd4\app\CSharpDemo.exe`，程序源码提交为 `1d66dd4388e1f0e4d5e8f3d73be2c96eedddf80a`，EXE SHA-256 为 `6E69787008315CBA29233E942B4852F93E08C39C8A31B201DC1BC7983A01012E`。桌面“机械臂-四轴操作台”快捷方式回读确认目标及图标为该 EXE、工作目录为该发布目录的 `app`、启动参数为空。实际交付证据见 [ThinkBook 交付记录](verification/2026-10-10-thinkbook-handoff.md) 及其 [deployment.json](verification/2026-10-10-thinkbook-handoff/deployment.json)。
 
-当前主分支包含 10 月 10 日关窗保护修订，Windows 离线构建及 20 项核心、33 项保险、26 组 UI 回归已通过，证据见[合并审查记录](verification/2026-10-10-merge-review.md)。本次未更新现场发布目录、桌面快捷方式或运行控制程序；新版现场使用仍需操作者按上述流程切换并验收。源码已交接、离线验证通过与现场程序已升级是不同状态。
+10 月 10 日关窗保护修订已通过 Windows 离线构建及 20 项核心、33 项保险、26 组 UI 回归，证据见[合并审查记录](verification/2026-10-10-merge-review.md)。随后于北京时间 13:30（`2026-10-10T05:30:21.4180401Z`）完成新版文件和桌面快捷方式交付，5 个 App 文件、19 个已测试源文件及 25 个源码/证据包文件哈希通过。部署前后 `CSharpDemo` 进程数和 UDP 60000 监听数均为 0；没有启动 App、连接控制卡或执行硬件动作。接手者首次运行仍需由现场操作者确认条件并完成新版实机验收。
+
+10 月 9 日使能保险版保留在 `C:\RobotArmDemo\releases\four-axis-insurance-20261009-180249\built\app\`，旧 EXE 及三份 SDK DLL 在本次交付前后校验值不变；旧桌面快捷方式二进制备份为 `C:\RobotArmDemo\releases\four-axis-handoff-20261010-1d66dd4\rollback\机械臂-四轴操作台.lnk`。回滚前先由操作者停稳并正常关闭当前程序，再恢复旧入口。该次历史交付见[使能保险版交付记录](verification/2026-10-09-enable-insurance.md)。更早的输入修复版 `four-axis-input-20261009-140000`、四轴方向版 `four-axis-lift-20261009-134342` 和圈数测试版 `axis2-turns-20261009-122203` 也是历史目录，是否还存在应现场核对。
 
 回滚需要整组保留 EXE 与三份 SDK DLL。不要从另一套示例中只替换一个同名 DLL，也不要用原始厂商 Demo 替代当前维护源码后继续声称通过了本版检查。
+
+本次交接标签 `handoff-2026-10-10` 固定交付快照；标签包含交接说明及交付证据，部署程序的源码提交仍为 `1d66dd4`。仓库继续供接手人开发维护。接手时先核对标签、当前 `main`、实际 EXE 与交付记录，再沿用独立发布目录和离线回归处理后续修改。
 
 ## 6. 接手时需补齐的现场清单
 

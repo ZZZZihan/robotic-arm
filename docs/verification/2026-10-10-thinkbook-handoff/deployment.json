@@ -1,0 +1,72 @@
+{
+  "status": "files_and_shortcut_updated",
+  "createdAtUtc": "2026-10-10T05:30:21.4180401Z",
+  "sourceCommit": "1d66dd4388e1f0e4d5e8f3d73be2c96eedddf80a",
+  "releaseDirectory": "C:\\RobotArmDemo\\releases\\four-axis-handoff-20261010-1d66dd4",
+  "exeSha256": "6E69787008315CBA29233E942B4852F93E08C39C8A31B201DC1BC7983A01012E",
+  "appFiles": [
+    {
+      "name": "CSharpDemo.exe",
+      "size": 54784,
+      "sha256": "6E69787008315CBA29233E942B4852F93E08C39C8A31B201DC1BC7983A01012E"
+    },
+    {
+      "name": "CSharpDemo.pdb",
+      "size": 95744,
+      "sha256": "FEFFD721134E049A852F58B70567F9D62C2314ACD607CEBDD4E81AE147E7657F"
+    },
+    {
+      "name": "MultiCard.dll",
+      "size": 7354880,
+      "sha256": "E403B3BA37CF0B14CEF22034F425AB096D0B77178CF091BD6E913E950628B7A4"
+    },
+    {
+      "name": "MultiCardCLR.dll",
+      "size": 152064,
+      "sha256": "ACD906B6729C33EA566C5FBC5E9EDE24B59466C439A4763FD8635A1DD3F51739"
+    },
+    {
+      "name": "MultiCardCS.dll",
+      "size": 80896,
+      "sha256": "5DF9249C01FDBAFC9420FB25718A4C8A90DE84F148AAD0F4F190EC6B72F5EED7"
+    }
+  ],
+  "sourceFilesVerified": 19,
+  "packageFilesVerified": 25,
+  "shortcutName": "机械臂-四轴操作台.lnk",
+  "beforeShortcut": {
+    "target": "C:\\RobotArmDemo\\releases\\four-axis-insurance-20261009-180249\\built\\app\\CSharpDemo.exe",
+    "workingDirectory": "C:\\RobotArmDemo\\releases\\four-axis-insurance-20261009-180249\\built\\app",
+    "arguments": "",
+    "icon": ",0",
+    "description": "使能保险版：启动自动准备总线；当前轴人工使能保险；红色急停停止全部运动",
+    "windowStyle": 1,
+    "hotkey": ""
+  },
+  "afterShortcut": {
+    "target": "C:\\RobotArmDemo\\releases\\four-axis-handoff-20261010-1d66dd4\\app\\CSharpDemo.exe",
+    "workingDirectory": "C:\\RobotArmDemo\\releases\\four-axis-handoff-20261010-1d66dd4\\app",
+    "arguments": "",
+    "icon": "C:\\RobotArmDemo\\releases\\four-axis-handoff-20261010-1d66dd4\\app\\CSharpDemo.exe,0",
+    "description": "交接封存版 2026-10-10：启动自动连接并检查总线；当前轴人工使能保险；含点动停止确认保护",
+    "windowStyle": 1,
+    "hotkey": ""
+  },
+  "previousShortcutSha256": "56B48E79D299844260D1A3F0D6F14AF53DACCA50111770691F8F119C9B4A301C",
+  "shortcutSha256": "5CBB9E9D26AD869012121ABC947484C4AD03D8F3F69EAA98FE4CF668177BD6FB",
+  "shortcutBackup": "C:\\RobotArmDemo\\releases\\four-axis-handoff-20261010-1d66dd4\\rollback\\机械臂-四轴操作台.lnk",
+  "previousReleasePreserved": true,
+  "otherDesktopShortcutsUnchanged": true,
+  "beforeProcesses": [],
+  "afterProcesses": [],
+  "beforeUdp60000Listeners": [],
+  "afterUdp60000Listeners": [],
+  "behaviorChecks": 20,
+  "operationChecks": 33,
+  "uiChecks": 26,
+  "offlineValidationCreatedAtUtc": "2026-10-10T05:12:27.9916810Z",
+  "operatorAppStartedByDeployment": false,
+  "controllerConnectedByDeployment": false,
+  "hardwareCommandsIssuedByDeployment": false,
+  "physicalAcceptance": "pending operator test"
+}

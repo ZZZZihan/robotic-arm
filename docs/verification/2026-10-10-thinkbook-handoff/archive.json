@@ -1,0 +1,147 @@
+{
+  "status": "archive_verified",
+  "createdAtUtc": "2026-10-10T05:32:31.3380055Z",
+  "sourceCommit": "1d66dd4388e1f0e4d5e8f3d73be2c96eedddf80a",
+  "archivePath": "C:\\RobotArmDemo\\archives\\four-axis-handoff-20261010-1d66dd4.zip",
+  "archiveSha256": "2C5C526FF3430CF46384E32BA0656DFF7FEF450BC34953B55F25E4CDB7AB1FAE",
+  "archiveSize": 2579035,
+  "verifiedFiles": 33,
+  "entries": [
+    {
+      "path": "app/CSharpDemo.exe",
+      "sha256": "6E69787008315CBA29233E942B4852F93E08C39C8A31B201DC1BC7983A01012E"
+    },
+    {
+      "path": "app/CSharpDemo.pdb",
+      "sha256": "FEFFD721134E049A852F58B70567F9D62C2314ACD607CEBDD4E81AE147E7657F"
+    },
+    {
+      "path": "app/MultiCard.dll",
+      "sha256": "E403B3BA37CF0B14CEF22034F425AB096D0B77178CF091BD6E913E950628B7A4"
+    },
+    {
+      "path": "app/MultiCardCLR.dll",
+      "sha256": "ACD906B6729C33EA566C5FBC5E9EDE24B59466C439A4763FD8635A1DD3F51739"
+    },
+    {
+      "path": "app/MultiCardCS.dll",
+      "sha256": "5DF9249C01FDBAFC9420FB25718A4C8A90DE84F148AAD0F4F190EC6B72F5EED7"
+    },
+    {
+      "path": "source/EtherCATDemo/Axis2Motion.cs",
+      "sha256": "cb82744d22ba33a9345acae5632d3d8d797d15589b369f6b57b6b35e115b0df8"
+    },
+    {
+      "path": "source/EtherCATDemo/CSharpDemo.csproj",
+      "sha256": "a6942647c3511ac36196846bdcb075fddddc2bd65846e2cda896eb2e2309fd0c"
+    },
+    {
+      "path": "source/EtherCATDemo/DashboardWidgets.cs",
+      "sha256": "cfb3b53920c8586b510561b302141f7718ea29751b926fc755ce7401230fcdd1"
+    },
+    {
+      "path": "source/EtherCATDemo/Form1.Axis2.cs",
+      "sha256": "b8b35dfeadc4d2f4ed08c40ae2835285ce3d12822a798cd81afcaf6f79d6124c"
+    },
+    {
+      "path": "source/EtherCATDemo/Form1.Dashboard.cs",
+      "sha256": "9e77f7959606b2a247c468d057abf436e4db0e9b6acc976bc552f03349a36fed"
+    },
+    {
+      "path": "source/EtherCATDemo/Form1.Designer.cs",
+      "sha256": "ac06c2ea408116f75435f517ab094ee492541a31dc95b445a2a6058686e9bb5b"
+    },
+    {
+      "path": "source/EtherCATDemo/Form1.OperationSafety.cs",
+      "sha256": "f096e90041b13245da72d4d21828654bfd7cd56feb49820c722d5d1aeab3b3ce"
+    },
+    {
+      "path": "source/EtherCATDemo/Form1.cs",
+      "sha256": "6ae70f0975d36cc7c3499834d0359ddf0ce68177a7a6502b3bc32c7825d14b06"
+    },
+    {
+      "path": "source/EtherCATDemo/Form1.resx",
+      "sha256": "4d3ee9059f5b98ab1806f6916ebea2a8c56023f8c63ddfd80b7378d27d1aa0f6"
+    },
+    {
+      "path": "source/EtherCATDemo/OperationSafety.cs",
+      "sha256": "69e6c2b3e0031660f576213da69f80fe76f770255951ae306a20b934b09856a7"
+    },
+    {
+      "path": "source/EtherCATDemo/Program.cs",
+      "sha256": "6fab16755bd265eacd1878c6a3e764ac2169dca86e014fc4cc3e647d5fcfd5ed"
+    },
+    {
+      "path": "source/EtherCATDemo/Properties/AssemblyInfo.cs",
+      "sha256": "bd8d47517c85a5880fed8cb8b7ae47be80b84ef86d0534819c140d615373c304"
+    },
+    {
+      "path": "source/EtherCATDemo/Properties/Resources.Designer.cs",
+      "sha256": "a64aa775cf2815c339c029daddb0046c317cebd36faf9982885f4af711d48f75"
+    },
+    {
+      "path": "source/EtherCATDemo/Properties/Resources.resx",
+      "sha256": "4e124f5a7694ffe813c60601b1b73c53e47536b1f1c0e798d4d55bfc2ca3774f"
+    },
+    {
+      "path": "source/EtherCATDemo/Properties/Settings.Designer.cs",
+      "sha256": "23e00d70ca3ee25041e6b17db17ba2fb40eab76453c4c4307c25d228d8dc832b"
+    },
+    {
+      "path": "source/EtherCATDemo/Properties/Settings.settings",
+      "sha256": "baba99193fc1787141063b135424b476ff4151beb833883fcb594631f17c0147"
+    },
+    {
+      "path": "source/EtherCATDemo/README-axis2.md",
+      "sha256": "31c8fd065f809647c1d715b8b7c8b971b76e76aa56124c324d32de1e36732276"
+    },
+    {
+      "path": "source/EtherCATDemo/README-dashboard.md",
+      "sha256": "89da6bfbe92a951dd48377a2f5ebddeb0f8f19627a83730c3bfd2aaa683e5941"
+    },
+    {
+      "path": "source/EtherCATDemo/tests/Axis2MotionTests.cs",
+      "sha256": "04d4730dfa70b8617fc8ee3e373e3b752d3f5b0bf8d775bc2a62c60f1f8a0170"
+    },
+    {
+      "path": "source/EtherCATDemo/tests/OperationSafetyTests.cs",
+      "sha256": "0608328c704a8c4556804b190de54c375cb2f5deba8c8098cd95e392ed9ad500"
+    },
+    {
+      "path": "source/EtherCATDemo/tests/UiSmoke.cs",
+      "sha256": "d6f6b971db2634475b7dcbb62d429362006cda4141d438dbdfe6050899ed35a6"
+    },
+    {
+      "path": "verification/behavior-results.txt",
+      "sha256": "69903b3bc403af38ca6072699c519736b1ffb27b50138abc81cd52c526de1b49"
+    },
+    {
+      "path": "verification/operation-results.txt",
+      "sha256": "dff5e9db1c3fae0c4dd2ed53c4aedc75ab06e2bd996e06b7866feed255893410"
+    },
+    {
+      "path": "verification/ui-results.txt",
+      "sha256": "d6c5e2c9efce34c861d097b2515f596c0d026b128e8aab138dcd2bbd052c1d43"
+    },
+    {
+      "path": "verification/verification.json",
+      "sha256": "a55780239728d282a4b6e7c5ee58937e039458b04e68d27db7685531fb375e57"
+    },
+    {
+      "path": "deployment-manifest.json",
+      "sha256": "4BDE90249A9175D3A7CC01B878F1503D5E98C6A4728CEAAB1C292A62E5DB027F"
+    },
+    {
+      "path": "deployment-result.json",
+      "sha256": "74C05BC9B89156E7E3CC440FCBF6127444220AE2E4A196818DA15B805F99B858"
+    },
+    {
+      "path": "HANDOFF.txt",
+      "sha256": "8271996AC3C0B81FE7C222204E07EAF3D14F0050CA5B66B2695C1718196D0052"
+    }
+  ],
+  "shortcutRechecked": true,
+  "operatorAppStarted": false,
+  "controllerConnected": false,
+  "motionExecuted": false
+}
