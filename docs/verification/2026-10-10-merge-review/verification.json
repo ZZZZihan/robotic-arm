@@ -1,0 +1,134 @@
+{
+  "createdAtUtc": "2026-10-10T05:12:27.9916810Z",
+  "exeSha256": "6E69787008315CBA29233E942B4852F93E08C39C8A31B201DC1BC7983A01012E",
+  "controllerConnected": false,
+  "operatorAppStarted": false,
+  "behaviorChecks": 20,
+  "operationChecks": 33,
+  "uiChecks": 26,
+  "sdk": [
+    {
+      "path": "materials/sdk/bopai-ethercat-x64/MultiCard.dll",
+      "sha256": "E403B3BA37CF0B14CEF22034F425AB096D0B77178CF091BD6E913E950628B7A4"
+    },
+    {
+      "path": "materials/sdk/bopai-ethercat-x64/MultiCardCS.dll",
+      "sha256": "5DF9249C01FDBAFC9420FB25718A4C8A90DE84F148AAD0F4F190EC6B72F5EED7"
+    },
+    {
+      "path": "materials/sdk/bopai-ethercat-x64/MultiCardCLR.dll",
+      "sha256": "ACD906B6729C33EA566C5FBC5E9EDE24B59466C439A4763FD8635A1DD3F51739"
+    }
+  ],
+  "description": "Fresh Windows offline build and regression checks for the pre-merge jog close guard revision.",
+  "motionExecuted": false,
+  "fieldDeploymentUpdated": false,
+  "physicalAcceptance": "pending operator test",
+  "buildConfiguration": "Release / x64 / .NET Framework 4.0 Client Profile",
+  "compilerWarnings": [
+    "CS0219 Form1.cs:219 iRes",
+    "CS0219 Form1.cs:220 lValue"
+  ],
+  "sourceFiles": [
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Axis2Motion.cs",
+      "sha256": "cb82744d22ba33a9345acae5632d3d8d797d15589b369f6b57b6b35e115b0df8",
+      "sha256NormalizedLf": "cb82744d22ba33a9345acae5632d3d8d797d15589b369f6b57b6b35e115b0df8"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/CSharpDemo.csproj",
+      "sha256": "a6942647c3511ac36196846bdcb075fddddc2bd65846e2cda896eb2e2309fd0c",
+      "sha256NormalizedLf": "a6942647c3511ac36196846bdcb075fddddc2bd65846e2cda896eb2e2309fd0c"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/DashboardWidgets.cs",
+      "sha256": "cfb3b53920c8586b510561b302141f7718ea29751b926fc755ce7401230fcdd1",
+      "sha256NormalizedLf": "cfb3b53920c8586b510561b302141f7718ea29751b926fc755ce7401230fcdd1"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Form1.Axis2.cs",
+      "sha256": "b8b35dfeadc4d2f4ed08c40ae2835285ce3d12822a798cd81afcaf6f79d6124c",
+      "sha256NormalizedLf": "b8b35dfeadc4d2f4ed08c40ae2835285ce3d12822a798cd81afcaf6f79d6124c"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Form1.Dashboard.cs",
+      "sha256": "9e77f7959606b2a247c468d057abf436e4db0e9b6acc976bc552f03349a36fed",
+      "sha256NormalizedLf": "9e77f7959606b2a247c468d057abf436e4db0e9b6acc976bc552f03349a36fed"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Form1.Designer.cs",
+      "sha256": "ac06c2ea408116f75435f517ab094ee492541a31dc95b445a2a6058686e9bb5b",
+      "sha256NormalizedLf": "ac06c2ea408116f75435f517ab094ee492541a31dc95b445a2a6058686e9bb5b"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Form1.OperationSafety.cs",
+      "sha256": "f096e90041b13245da72d4d21828654bfd7cd56feb49820c722d5d1aeab3b3ce",
+      "sha256NormalizedLf": "f096e90041b13245da72d4d21828654bfd7cd56feb49820c722d5d1aeab3b3ce"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Form1.cs",
+      "sha256": "6ae70f0975d36cc7c3499834d0359ddf0ce68177a7a6502b3bc32c7825d14b06",
+      "sha256NormalizedLf": "6ae70f0975d36cc7c3499834d0359ddf0ce68177a7a6502b3bc32c7825d14b06"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Form1.resx",
+      "sha256": "4363cd7d5b8671c72442ce1a1bfc10d64ebd24b2d718b54bd4fcd025e4967298",
+      "sha256NormalizedLf": "4d3ee9059f5b98ab1806f6916ebea2a8c56023f8c63ddfd80b7378d27d1aa0f6"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/OperationSafety.cs",
+      "sha256": "69e6c2b3e0031660f576213da69f80fe76f770255951ae306a20b934b09856a7",
+      "sha256NormalizedLf": "69e6c2b3e0031660f576213da69f80fe76f770255951ae306a20b934b09856a7"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Program.cs",
+      "sha256": "da507e1442fddf01b3857c8bb8c27e0927da59b02ef9de21cc51a430e591bc0d",
+      "sha256NormalizedLf": "6fab16755bd265eacd1878c6a3e764ac2169dca86e014fc4cc3e647d5fcfd5ed"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Properties/AssemblyInfo.cs",
+      "sha256": "aa9a990c3cf1fc601158d6fb06a65aca14f7576406103afee42b65e433a666ea",
+      "sha256NormalizedLf": "bd8d47517c85a5880fed8cb8b7ae47be80b84ef86d0534819c140d615373c304"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Properties/Resources.Designer.cs",
+      "sha256": "8373187da121be1da4711fdd3bbaffa5c1ea48887e01aebef8c4e41a968905b7",
+      "sha256NormalizedLf": "a64aa775cf2815c339c029daddb0046c317cebd36faf9982885f4af711d48f75"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Properties/Resources.resx",
+      "sha256": "66b5ebd1b0fc73f041ba669ce2184f6f471d5e3524efa34ca31233e9f5395262",
+      "sha256NormalizedLf": "4e124f5a7694ffe813c60601b1b73c53e47536b1f1c0e798d4d55bfc2ca3774f"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Properties/Settings.Designer.cs",
+      "sha256": "a7c9c65f4ff29a7f3a6182db470b6e290de69810f678d9978fabab8f60048e2a",
+      "sha256NormalizedLf": "23e00d70ca3ee25041e6b17db17ba2fb40eab76453c4c4307c25d228d8dc832b"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/Properties/Settings.settings",
+      "sha256": "f6a4290723520caddd934b8800319c7ca6cc7eeab647059ec89b7a13b1513265",
+      "sha256NormalizedLf": "baba99193fc1787141063b135424b476ff4151beb833883fcb594631f17c0147"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/tests/Axis2MotionTests.cs",
+      "sha256": "04d4730dfa70b8617fc8ee3e373e3b752d3f5b0bf8d775bc2a62c60f1f8a0170",
+      "sha256NormalizedLf": "04d4730dfa70b8617fc8ee3e373e3b752d3f5b0bf8d775bc2a62c60f1f8a0170"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/tests/OperationSafetyTests.cs",
+      "sha256": "0608328c704a8c4556804b190de54c375cb2f5deba8c8098cd95e392ed9ad500",
+      "sha256NormalizedLf": "0608328c704a8c4556804b190de54c375cb2f5deba8c8098cd95e392ed9ad500"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/tests/UiSmoke.cs",
+      "sha256": "d6f6b971db2634475b7dcbb62d429362006cda4141d438dbdfe6050899ed35a6",
+      "sha256NormalizedLf": "d6f6b971db2634475b7dcbb62d429362006cda4141d438dbdfe6050899ed35a6"
+    }
+  ],
+  "buildScript": {
+    "path": "thinkbook-deploy/scripts/build-dashboard.ps1",
+    "sha256": "dac9dc1911e190273cb32e2d197798eeb42334850818d1d1c765db8e75c2c172",
+    "sha256NormalizedLf": "dac9dc1911e190273cb32e2d197798eeb42334850818d1d1c765db8e75c2c172"
+  }
+}

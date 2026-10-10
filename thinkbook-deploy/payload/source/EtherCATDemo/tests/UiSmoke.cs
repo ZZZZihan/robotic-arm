@@ -22,10 +22,10 @@ internal static class UiSmoke
     private sealed class FakeOperationCard : IOperationSafetyCard
     {
         public OperationSnapshot Data;
-        public int Enables, Stops;
+        public int Enables, Stops, Reads;
         public bool FailStop;
         public void Open() { }
-        public OperationSnapshot ReadSnapshot() { return Data; }
+        public OperationSnapshot ReadSnapshot() { Reads++; return Data; }
         public short ReadSlaveCount() { return 4; }
         public short ReadInitStep() { return 0; }
         public void InitializeBus() { throw new Exception("UI fake must reuse ready bus"); }
@@ -69,7 +69,7 @@ internal static class UiSmoke
         held.Capture = false;
         Assert(fake.Stops == 1 && !(bool)Field(form, "legacyJogActive"), "lost mouse capture failed to stop jog");
         sample.lAxisStatus[0] &= ~OperationSafety.RunningBits;
-        Call(form, "UpdateDashboardSample", sample);
+        Call(form, "HandleAxis2Sample", 0, sample);
         Assert(((Button)Field(form, "buttonJogP")).Enabled, "ordinary jog stop revoked valid insurance");
         Console.WriteLine("PASS UI held jog survives running refresh and lost capture requests all-axis stop through fake");
         axes.SelectedIndex = 1; Call(form, "UpdateDashboardSample", sample); insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
@@ -98,6 +98,91 @@ internal static class UiSmoke
         Assert(fake.Stops == stopsBeforeLoss + 1 && safety.EmergencyLatched && !(bool)Field(form, "legacyJogActive"), "jog feedback loss did not request stop and latch insurance");
         Console.WriteLine("PASS UI jog feedback loss requests all-axis emergency and locks insurance through fake");
         SetField(form, "cardOpened", false); Call(form, "InvalidateDashboardSample");
+    }
+
+    private static bool ClosingIsCancelledOffline(Form1 form)
+    {
+        // Even a regression that reaches the close branch must never call GA_Close.
+        bool opened = (bool)Field(form, "cardOpened");
+        SetField(form, "cardOpened", false);
+        try
+        {
+            FormClosingEventArgs closing = new FormClosingEventArgs(CloseReason.UserClosing, false);
+            Call(form, "Axis2FormClosing", null, closing);
+            return closing.Cancel;
+        }
+        finally { SetField(form, "cardOpened", opened); }
+    }
+
+    private static void CheckLegacyCloseGuard(Form1 form)
+    {
+        MultiCardCS.MultiCardCS.TAllSysStatusDataSX sample = (MultiCardCS.MultiCardCS.TAllSysStatusDataSX)Call(form, "CreateStatusBuffer");
+        for (int i = 0; i < 4; i++) sample.lAxisStatus[i] = 0xA00;
+        FakeOperationCard fake = new FakeOperationCard { Data = new OperationSnapshot { Status = sample.lAxisStatus, Planned = sample.lAxisPrfPos, Encoder = sample.lAxisEncPos } };
+        OperationSafety safety = new OperationSafety(fake); safety.BeginInitialization(0);
+        SetField(form, "operationSafety", safety); SetField(form, "operationCard", fake);
+        SetField(form, "legacyJogActive", false); SetField(form, "legacyMotionPending", false); SetField(form, "legacyStopRequested", false);
+        SetField(form, "cardOpened", true);
+        try
+        {
+            ((ComboBox)Field(form, "comboBoxAxisSel")).SelectedIndex = 0;
+            Call(form, "UpdateDashboardSample", sample);
+            Button insurance = (Button)Field(form, "buttonAxisOn"), held = (Button)Field(form, "buttonJogP");
+            insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+            SetField(form, "legacyJogActive", true); SetField(form, "legacyMotionPending", true); SetField(form, "heldJogButton", held);
+            fake.FailStop = true; Call(form, "StopLegacyJog");
+            Assert(fake.Stops == 2 && !(bool)Field(form, "legacyJogActive") && (bool)Field(form, "legacyMotionPending")
+                && (bool)Field(form, "legacyStopRequested"), "failed jog stop discarded pending motion");
+            Assert(ClosingIsCancelledOffline(form) && ClosingIsCancelledOffline(form), "repeated close bypassed failed jog stop");
+            fake.FailStop = false; Call(form, "StopLegacyJog");
+            Assert(fake.Stops == 3 && (bool)Field(form, "legacyMotionPending"), "jog stop retry failed or command return cleared pending motion");
+            Console.WriteLine("PASS UI failed jog stop blocks repeated close and fake stop retry retains pending confirmation");
+
+            sample.lAxisStatus[0] |= OperationSafety.RunningBits;
+            Assert((bool)Call(form, "HandleAxis2Sample", 0, sample) && ClosingIsCancelledOffline(form), "running feedback allowed close");
+            sample.lAxisStatus[0] &= ~OperationSafety.RunningBits;
+            Assert(!(bool)Call(form, "HandleAxis2Sample", -7, sample) && ClosingIsCancelledOffline(form), "failed feedback allowed close");
+            MultiCardCS.MultiCardCS.TAllSysStatusDataSX incomplete = sample;
+            incomplete.lAxisPrfPos = new int[2]; incomplete.lAxisEncPos = new int[2];
+            Assert(!(bool)Call(form, "HandleAxis2Sample", 0, incomplete) && ClosingIsCancelledOffline(form), "incomplete four-axis feedback cleared pending stop");
+            Call(form, "UpdateDashboardSample", sample);
+            Call(form, "EmergencyStopFromDashboard");
+            Assert(fake.Stops == 4 && safety.StopRequestSucceeded, "successful fake emergency retry did not permit explicit recovery");
+            insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+            int reads = fake.Reads;
+            Assert(!(bool)Call(form, "PrepareMotion") && fake.Reads == reads && (bool)Field(form, "legacyMotionPending"), "pending stop allowed new motion or card preflight");
+            Assert(!((Button)Field(form, "buttonJogP")).Enabled && ClosingIsCancelledOffline(form), "cached stationary display unlocked pending stop");
+            Console.WriteLine("PASS UI running, failed, incomplete and cached feedback keep close and new motion blocked");
+
+            Assert((bool)Call(form, "HandleAxis2Sample", 0, sample) && !(bool)Field(form, "legacyMotionPending")
+                && !(bool)Field(form, "legacyStopRequested") && !ClosingIsCancelledOffline(form), "fresh complete stationary feedback did not release close guard");
+            insurance.PerformClick(); Call(form, "UpdateDashboardSample", sample);
+            Assert((bool)Call(form, "PrepareMotion") && ((Button)Field(form, "buttonJogP")).Enabled, "new stopped feedback prevented explicit motion recovery");
+            Console.WriteLine("PASS UI fresh complete stationary feedback permits offline close and explicit insurance recovery");
+
+            SetField(form, "legacyJogActive", true); SetField(form, "legacyMotionPending", true); SetField(form, "heldJogButton", held);
+            held.Capture = true;
+            Label actual = (Label)Field(form, "actualValue");
+            EventHandler loseCapture = delegate { held.Capture = false; };
+            actual.TextChanged += loseCapture;
+            try
+            {
+                sample.lAxisEncPos[0] = sample.lAxisPrfPos[0] = 1;
+                Assert((bool)Call(form, "HandleAxis2Sample", 0, sample), "same-frame capture-loss sample failed");
+            }
+            finally { actual.TextChanged -= loseCapture; }
+            Assert(fake.Stops == 5 && !(bool)Field(form, "legacyJogActive") && (bool)Field(form, "legacyMotionPending")
+                && ClosingIsCancelledOffline(form), "sample received before capture-loss stop confirmed that same stop");
+            Call(form, "HandleAxis2Sample", 0, sample);
+            Assert(!(bool)Field(form, "legacyMotionPending") && !ClosingIsCancelledOffline(form), "next stationary sample failed to release capture-loss stop");
+            Console.WriteLine("PASS UI capture-loss stop cannot consume its earlier refresh sample as stop confirmation");
+        }
+        finally
+        {
+            SetField(form, "cardOpened", false); SetField(form, "legacyJogActive", false);
+            SetField(form, "heldJogButton", null); SetField(form, "legacyMotionPending", false); SetField(form, "legacyStopRequested", false);
+            Call(form, "InvalidateDashboardSample");
+        }
     }
     private static void Assert(bool valid, string message) { if (!valid) throw new Exception(message); }
     private static TextBox Editor(NumericUpDown input)
@@ -273,6 +358,7 @@ internal static class UiSmoke
             Render(form, Path.Combine(Path.GetDirectoryName(screenshot), "ui-diagnostics.png"));
             Console.WriteLine("PASS UI diagnostics layout");
             CheckInsurance(form);
+            CheckLegacyCloseGuard(form);
             Assert(!(bool)Field(form, "cardOpened"), "UI tests connected controller");
             form.Close();
         }

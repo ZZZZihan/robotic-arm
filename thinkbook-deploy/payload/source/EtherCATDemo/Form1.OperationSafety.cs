@@ -11,6 +11,8 @@ namespace CSharpDemo
         private OperationInitializationPhase lastInitializationPhase;
         private bool legacyJogActive;
         private Button heldJogButton;
+        private bool legacyMotionPending;
+        private bool legacyStopRequested;
 
         private sealed class OperationCard : IOperationSafetyCard
         {
@@ -112,7 +114,7 @@ namespace CSharpDemo
 
         private bool InsuranceAllowsMotion()
         {
-            if (operationSafety == null) return false;
+            if (operationSafety == null || legacyMotionPending) return false;
             try { operationSafety.AssertCanMove(comboBoxAxisSel.SelectedIndex + 1, sessionClock.ElapsedMilliseconds); return true; }
             catch (InvalidOperationException) { return false; }
         }
@@ -122,6 +124,7 @@ namespace CSharpDemo
             try
             {
                 if (operationSafety == null) throw new InvalidOperationException("系统尚未初始化。");
+                if (legacyMotionPending) throw new InvalidOperationException("点动停止尚未由新反馈确认，暂不能开始新的运动。");
                 operationSafety.AssertCanMove(comboBoxAxisSel.SelectedIndex + 1, sessionClock.ElapsedMilliseconds);
                 if (operationCard.ReadSlaveCount() != 4 || operationCard.ReadInitStep() != 0)
                 {
@@ -146,6 +149,10 @@ namespace CSharpDemo
                 Require("GA_PrfJog", MultiCardCS_1.GA_PrfJog(axis));
                 Require("GA_SetJogPrm", MultiCardCS_1.GA_SetJogPrm(axis, ref parameters));
                 Require("GA_SetVel", MultiCardCS_1.GA_SetVel(axis, direction * 20));
+                // A failed update may still have reached the controller. Retain this
+                // state independently of mouse capture until a stop is observed.
+                legacyMotionPending = true;
+                legacyStopRequested = false;
                 Require("GA_Update", MultiCardCS_1.GA_Update(1 << (axis - 1)));
                 legacyJogActive = true;
                 heldJogButton = direction < 0 ? buttonJogN : buttonJogP;
@@ -161,6 +168,8 @@ namespace CSharpDemo
         private void StopLegacyJog()
         {
             if (!cardOpened) return;
+            if (legacyJogActive) legacyMotionPending = true;
+            if (legacyMotionPending) legacyStopRequested = true;
             legacyJogActive = false;
             heldJogButton = null;
             try
@@ -175,6 +184,8 @@ namespace CSharpDemo
         private void EmergencyStopFromDashboard()
         {
             // No dialog or feedback prerequisite may delay the stop request.
+            if (legacyJogActive) legacyMotionPending = true;
+            if (legacyMotionPending) legacyStopRequested = true;
             operationSafety.EmergencyStop();
             axis2Motion.RecordExternalStopRequest();
             legacyJogActive = false;
@@ -185,6 +196,18 @@ namespace CSharpDemo
                 : "急停未确认送达：" + operationSafety.Error + "。运动已锁定，请立即使用现场物理急停。",
                 !operationSafety.StopRequestSucceeded);
             RefreshAxis2Controls();
+        }
+
+        private void ObserveLegacyStop(OperationSnapshot snapshot)
+        {
+            if (!legacyMotionPending || !legacyStopRequested) return;
+            if (snapshot == null || snapshot.Status == null || snapshot.Status.Length < 4
+                || snapshot.Planned == null || snapshot.Planned.Length < 4
+                || snapshot.Encoder == null || snapshot.Encoder.Length < 4) return;
+            for (int i = 0; i < 4; i++)
+                if ((snapshot.Status[i] & OperationSafety.RunningBits) != 0) return;
+            legacyMotionPending = false;
+            legacyStopRequested = false;
         }
     }
 }

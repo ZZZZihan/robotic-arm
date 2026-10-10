@@ -232,6 +232,10 @@ namespace CSharpDemo
             {
                 Require("GA_GetAllSysStatusSX", code);
                 Axis2Snapshot snapshot = Snapshot(status);
+                // Confirm only a new successful sample received after the stop.
+                // UI refresh below can itself lose capture and request a stop;
+                // that request must not consume this earlier sample as proof.
+                ObserveLegacyStop(ToOperationSnapshot(status));
                 if (feedbackWasLost)
                 {
                     feedbackWasLost = false;
@@ -284,7 +288,7 @@ namespace CSharpDemo
 
         private void Axis2FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (legacyJogActive) { StopLegacyJog(); e.Cancel = true; return; }
+            if (legacyJogActive || legacyMotionPending) { StopLegacyJog(); e.Cancel = true; return; }
             if (axis2Motion.Active)
             {
                 StopAxis2("关闭窗口前停止轴2");
