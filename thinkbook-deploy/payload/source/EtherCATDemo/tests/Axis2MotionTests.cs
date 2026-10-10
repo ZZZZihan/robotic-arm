@@ -138,6 +138,14 @@ internal static class Axis2MotionTests
             Assert(f.Stops == 1 && f.Moves == 2 && next.Target == 95000 - 262144 && !m.StopRequested,
                 "next command reused interrupted target or sticky stop state");
         });
+        Test("external all-axis stop waits for feedback and releases interrupted target", delegate {
+            Fake f = new Fake(); Axis2Motion m = new Axis2Motion(f); m.Start(4M, 60M, 1, 1000);
+            f.Data.Status[1] = 0x600; f.Data.Planned = f.Data.Encoder = 95000;
+            m.RecordExternalStopRequest();
+            Assert(m.Active && m.StopRequested && f.Stops == 0 && !m.Observe(f.Data), "external stop falsely cleared active or issued another SDK stop");
+            f.Data.Status[1] = 0xA00;
+            Assert(m.Observe(f.Data) && !m.Active, "external stop retained interrupted target lock");
+        });
         Test("stop when idle does not block a later explicit move", delegate {
             Fake f = new Fake(); Axis2Motion m = new Axis2Motion(f); m.Stop();
             Assert(!m.Active && f.Moves == 0, "idle stop starts or locks motion");

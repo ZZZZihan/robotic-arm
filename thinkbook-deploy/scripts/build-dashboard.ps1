@@ -62,7 +62,13 @@ $behaviorOutput = & (Join-Path $tests 'Axis2MotionTests.exe')
 if ($LASTEXITCODE -ne 0) { $behaviorOutput | Write-Output; throw 'Behavior tests failed.' }
 $behaviorOutput | Write-Output
 $behaviorOutput | Set-Content -LiteralPath (Join-Path $tests 'behavior-results.txt') -Encoding UTF8
-& $csc /nologo /platform:x64 /target:exe "/out:$tests\UiSmoke.exe" /reference:System.dll /reference:System.Core.dll /reference:System.Data.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll "/reference:$app\MultiCardCS.dll" "/reference:$app\MultiCardCLR.dll" (Join-Path $source 'Form1.cs') (Join-Path $source 'Form1.Designer.cs') (Join-Path $source 'Form1.Axis2.cs') (Join-Path $source 'Form1.Dashboard.cs') (Join-Path $source 'DashboardWidgets.cs') (Join-Path $source 'Axis2Motion.cs') (Join-Path $source 'tests\UiSmoke.cs')
+& $csc /nologo /platform:x64 /target:exe "/out:$tests\OperationSafetyTests.exe" (Join-Path $source 'OperationSafety.cs') (Join-Path $source 'tests\OperationSafetyTests.cs')
+if ($LASTEXITCODE -ne 0) { throw 'Operation safety test compilation failed.' }
+$operationOutput = & (Join-Path $tests 'OperationSafetyTests.exe')
+if ($LASTEXITCODE -ne 0) { $operationOutput | Write-Output; throw 'Operation safety tests failed.' }
+$operationOutput | Write-Output
+$operationOutput | Set-Content -LiteralPath (Join-Path $tests 'operation-results.txt') -Encoding UTF8
+& $csc /nologo /platform:x64 /target:exe "/out:$tests\UiSmoke.exe" /reference:System.dll /reference:System.Core.dll /reference:System.Data.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll "/reference:$app\MultiCardCS.dll" "/reference:$app\MultiCardCLR.dll" (Join-Path $source 'Form1.cs') (Join-Path $source 'Form1.Designer.cs') (Join-Path $source 'Form1.Axis2.cs') (Join-Path $source 'Form1.Dashboard.cs') (Join-Path $source 'Form1.OperationSafety.cs') (Join-Path $source 'OperationSafety.cs') (Join-Path $source 'DashboardWidgets.cs') (Join-Path $source 'Axis2Motion.cs') (Join-Path $source 'tests\UiSmoke.cs')
 if ($LASTEXITCODE -ne 0) { throw 'UI test compilation failed.' }
 $uiOutput = & (Join-Path $tests 'UiSmoke.exe') (Join-Path $tests 'ui-smoke.png')
 if ($LASTEXITCODE -ne 0) { $uiOutput | Write-Output; throw 'Offline UI checks failed.' }
@@ -76,6 +82,7 @@ $result = [ordered]@{
     controllerConnected = $false
     operatorAppStarted = $false
     behaviorChecks = @($behaviorOutput | Where-Object { $_ -match '^PASS ' -and $_ -notmatch '^PASS [0-9]+ behavior tests' }).Count
+    operationChecks = @($operationOutput | Where-Object { $_ -match '^PASS SAFETY ' -and $_ -notmatch 'operation safety behavior tests' }).Count
     uiChecks = @($uiOutput | Where-Object { $_ -match '^PASS UI ' -and $_ -notmatch '^PASS UI verification;' }).Count
     sdk = $sdkEntries | Select-Object path,sha256
 }

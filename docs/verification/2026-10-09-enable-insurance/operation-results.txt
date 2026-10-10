@@ -1,0 +1,34 @@
+PASS SAFETY startup reuses four-slave bus without enable or stop
+PASS SAFETY zero-slave startup initializes exactly once and never enables
+PASS SAFETY initialization cannot finish before one second
+PASS SAFETY startup cannot reopen or reinitialize after any result
+PASS SAFETY all startup adapter failures are visible and do not auto retry
+PASS SAFETY partial or excessive startup topology is not overwritten
+PASS SAFETY existing bus with incomplete init step is not reinitialized
+PASS SAFETY zero-slave enabled running homing or hazardous axis blocks initialization
+PASS SAFETY existing enabled idle bus carries no session permission
+PASS SAFETY existing bus with running or hazardous axis refuses readiness
+PASS SAFETY initialization timeout holds failed and cannot retry
+PASS SAFETY initialization completion requires fresh disabled hazard-free stopped axes
+PASS SAFETY partial topology can be observed during bounded initialization
+PASS SAFETY initialization poll errors and malformed snapshots fail closed
+PASS SAFETY manual insurance enables only selected axis and waits for new feedback
+PASS SAFETY pre-click enabled feedback cannot immediately open insurance
+PASS SAFETY pending enable waits without duplicate writes and expires
+PASS SAFETY stale feedback blocks manual enable and movement
+PASS SAFETY every hazard or running bit blocks all motion and manual enable
+PASS SAFETY following difference over 100 blocks selected axis
+PASS SAFETY lost enable or any hazardous axis revokes session permission
+PASS SAFETY running feedback retains permission but prevents another command
+PASS SAFETY snapshot arrays are copied and malformed observe invalidates
+PASS SAFETY invalid axis and unready bus never write enable
+PASS SAFETY enable failure cannot authorize an axis
+PASS SAFETY emergency locks before stop adapter and repeated failures can retry
+PASS SAFETY emergency attempts stop even after stale invalid or failed initialization
+PASS SAFETY successful emergency is a locked request with no automatic recovery
+PASS SAFETY emergency recovery requires stationary fresh feedback then bus revalidation
+PASS SAFETY recovery read or enable failure keeps emergency latch
+PASS SAFETY insurance moves to explicitly selected axis only
+PASS SAFETY ordinary insurance revalidates topology and reads snapshot last
+PASS SAFETY SDK duration does not consume initialization or enable settling wait
+PASS SAFETY 33 operation safety behavior tests; fake adapter only, no SDK loaded.

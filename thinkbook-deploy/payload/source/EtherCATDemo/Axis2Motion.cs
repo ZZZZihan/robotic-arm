@@ -149,6 +149,12 @@ namespace CSharpDemo
             // Keep Active until a valid subsequent snapshot confirms planner stopped.
         }
 
+        public void RecordExternalStopRequest()
+        {
+            if (Active) StopRequested = true;
+            // All-axis stop was issued by the owner. Still await a valid stopped sample.
+        }
+
         public static bool IsCoeAbort(int value)
         {
             uint family = unchecked((uint)value) & 0xFFFF0000U;

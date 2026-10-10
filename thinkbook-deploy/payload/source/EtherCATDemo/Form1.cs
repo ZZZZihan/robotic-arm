@@ -17,16 +17,19 @@ namespace CSharpDemo
         //MultiCardCS.MultiCardCS MultiCardCS_2 = new MultiCardCS.MultiCardCS();
         //MultiCardCS.MultiCardCS MultiCardCS_3 = new MultiCardCS.MultiCardCS();
 
-        public Form1()
+        public Form1() : this(true) { }
+
+        internal Form1(bool autoInitialize)
         {
             InitializeComponent();
 
             for (int axis = 1; axis <= 4; axis++) comboBoxAxisSel.Items.Add("轴" + axis);
             comboBoxAxisSel.SelectedIndex = 0;
             InitializeAxis2Controls();
+            InitializeOperationSafety(autoInitialize);
 
             Timer timer1 = new Timer();
-            timer1.Enabled = true;
+            timer1.Enabled = autoInitialize;
             timer1.Interval = 100;
             timer1.Tick += new System.EventHandler(this.timer1_Tick);
         }
@@ -65,6 +68,7 @@ namespace CSharpDemo
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            PollOperationInitialization();
             if (!cardOpened)
             {
                 label_InitStatus.Text = "未连接控制卡";
@@ -93,15 +97,17 @@ namespace CSharpDemo
 
             int initCode;
             try { initCode = MultiCardCS_1.GA_ECatGetInitStep(ref pCutInitSlaveNum, ref pMode, ref pModeStep); }
-            catch (Exception error) { label_InitStatus.Text = "初始化状态读取失败：" + error.Message; return; }
-            if (initCode != 0) { label_InitStatus.Text = "初始化状态读取失败：" + initCode; return; }
+            catch (Exception error) { operationSafety.Invalidate(); RefreshAxis2Controls(); label_InitStatus.Text = "总线状态读取失败：" + error.Message; return; }
+            if (initCode != 0) { operationSafety.Invalidate(); RefreshAxis2Controls(); label_InitStatus.Text = "总线状态读取失败：" + initCode; return; }
 
             strText = pCutInitSlaveNum < 0 ? "总线未就绪（站号 " + pCutInitSlaveNum + "）" : string.Format("正在初始化第{0:G}个站点,当前模式{1:G}，子步{2:G}", pCutInitSlaveNum, pMode, pModeStep);
 
             if (0 == pCutInitSlaveNum)
             {
-                 strText = string.Format("初始化完成");
+                 strText = operationSafety.BusReady ? "总线就绪 · 运动前请点击使能保险" : "等待系统初始化确认";
             }
+            else { operationSafety.Invalidate(); RefreshAxis2Controls(); }
+            if (operationSafety.Phase == OperationInitializationPhase.Failed) strText = "初始化未完成：" + operationSafety.Error;
             label_InitStatus.Text = strText;
         }
 
@@ -176,89 +182,36 @@ namespace CSharpDemo
 
         private void buttonAxisOn_Click(object sender, EventArgs e)
         {
-            if (!cardOpened || axis2Motion.Active) return;
+            if (operationSafety == null || axis2Motion.Active) return;
             try
             {
                 short axis = (short)(comboBoxAxisSel.SelectedIndex + 1);
-                Require("GA_AxisOn(轴" + axis + ")", MultiCardCS_1.GA_AxisOn(axis));
+                operationSafety.AuthorizeAxis(axis, sessionClock.ElapsedMilliseconds);
                 if (axis == 2) enabledStable.Reset();
-                ShowResult("轴" + axis + "使能请求返回0；请等待反馈稳定后再移动。", false);
+                ShowResult("轴" + axis + "使能保险已确认；等待新的使能反馈后可操作。", false);
             }
             catch (Exception error) { ShowResult(error.Message, true); }
+            RefreshAxis2Controls();
         }
 
         private void buttonJogN_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!cardOpened || axis2Motion.Active || comboBoxAxisSel.SelectedIndex == 1) return;
-            if (!dashboardValid) { ShowResult("暂无有效反馈，未启动点动。", true); return; }
-            short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
-            int iRes = 0;
-            MultiCardCS.MultiCardCS.TJogPrm m_JogPrm;
-
-            //加速度，单位：脉冲/毫秒/毫秒
-            m_JogPrm.dAcc = 1;
-            //减速度，单位：脉冲/毫秒/毫秒
-            m_JogPrm.dDec = 1;
-            //平滑时间(需要设置为0)
-            m_JogPrm.dSmooth = 0;
-
-            //使能轴（通常设置一次即可，不是每次必须）
-            iRes = MultiCardCS_1.GA_AxisOn(nAxisNum);
-            //设置为速度模式（通常设置一次即可，不是每次必须）
-            iRes = MultiCardCS_1.GA_PrfJog(nAxisNum);
-
-            //设置运动参数
-            iRes = MultiCardCS_1.GA_SetJogPrm(nAxisNum, ref m_JogPrm);
-
-            //设置速度
-            iRes = MultiCardCS_1.GA_SetVel(nAxisNum, -20);
-
-            //启动运动
-            iRes = MultiCardCS_1.GA_Update(0X0001 << (nAxisNum - 1));
+            StartLegacyJog(-1);
         }
 
         private void buttonJogN_MouseUp(object sender, MouseEventArgs e)
         {
-            if (!cardOpened) return;
-            //停止所有轴和坐标系
-            MultiCardCS_1.GA_Stop(0XFFFFF, 0XFFFFF);
+            StopLegacyJog();
         }
 
         private void buttonJogP_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!cardOpened || axis2Motion.Active || comboBoxAxisSel.SelectedIndex == 1) return;
-            if (!dashboardValid) { ShowResult("暂无有效反馈，未启动点动。", true); return; }
-            short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
-            int iRes = 0;
-            MultiCardCS.MultiCardCS.TJogPrm m_JogPrm;
-
-            //加速度，单位：脉冲/毫秒/毫秒
-            m_JogPrm.dAcc = 1;
-            //减速度，单位：脉冲/毫秒/毫秒
-            m_JogPrm.dDec = 1;
-            //平滑时间(需要设置为0)
-            m_JogPrm.dSmooth = 0;
-
-            //使能轴（通常设置一次即可，不是每次必须）
-            iRes = MultiCardCS_1.GA_AxisOn(nAxisNum);
-            //设置为速度模式（通常设置一次即可，不是每次必须）
-            iRes = MultiCardCS_1.GA_PrfJog(nAxisNum);
-
-            //设置运动参数
-            iRes = MultiCardCS_1.GA_SetJogPrm(nAxisNum, ref m_JogPrm);
-
-            //设置速度
-            iRes = MultiCardCS_1.GA_SetVel(nAxisNum, 20);
-
-            //启动运动
-            iRes = MultiCardCS_1.GA_Update(0X0001 << (nAxisNum - 1));
+            StartLegacyJog(1);
         }
 
         private void buttonJogP_MouseUp(object sender, MouseEventArgs e)
         {
-            if (!cardOpened) return;
-            //停止所有轴和坐标系
-            MultiCardCS_1.GA_Stop(0XFFFFF, 0XFFFFF);
+            StopLegacyJog();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -304,19 +257,23 @@ namespace CSharpDemo
         private void button5_Click_1(object sender, EventArgs e)
         {
             if (!cardOpened || axis2Motion.Active) return;
+            if (!PrepareMotion()) return;
             if (comboBoxAxisSel.SelectedIndex == 1) { StartAxis2(-1); return; }
             short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
 
-            MultiCardCS_1.GA_SetTrapPosAndUpdate(nAxisNum, -100000, 20, 1, 1, 0, 0, 0);
+            try { Require("GA_SetTrapPosAndUpdate", MultiCardCS_1.GA_SetTrapPosAndUpdate(nAxisNum, -100000, 20, 1, 1, 0, 0, 0)); }
+            catch (Exception error) { EmergencyStopFromDashboard(); ShowResult(error.Message + "；运动已锁定，请确认现场停止。", true); }
         }
 
         private void button4_Click_1(object sender, EventArgs e)
         {
             if (!cardOpened || axis2Motion.Active) return;
+            if (!PrepareMotion()) return;
             if (comboBoxAxisSel.SelectedIndex == 1) { StartAxis2(1); return; }
             short nAxisNum = (short)(comboBoxAxisSel.SelectedIndex + 1);
 
-            MultiCardCS_1.GA_SetTrapPosAndUpdate(nAxisNum, 100000, 20, 1, 1, 0, 0, 0);
+            try { Require("GA_SetTrapPosAndUpdate", MultiCardCS_1.GA_SetTrapPosAndUpdate(nAxisNum, 100000, 20, 1, 1, 0, 0, 0)); }
+            catch (Exception error) { EmergencyStopFromDashboard(); ShowResult(error.Message + "；运动已锁定，请确认现场停止。", true); }
         }
     }
 }

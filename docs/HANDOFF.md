@@ -1,10 +1,10 @@
 # 机械臂操作台交接说明
 
-更新于 2026-10-09。主入口是[根目录 README](../README.md)。本文描述当前维护代码和已记录的现场反馈，不代表接手当天的驱动状态。
+更新于 2026-10-10。主入口是[根目录 README](../README.md)。本文描述当前维护代码和已记录的现场反馈，不代表接手当天的驱动状态。
 
 ## 1. 版本与配置
 
-当前维护入口是 `thinkbook-deploy/payload/source/EtherCATDemo/CSharpDemo.csproj`，Windows WinForms、.NET Framework 4.0 Client Profile、x64。应用代码基线 `ac636ff`；目录名仍沿用厂商 Demo，不表示里面还是原版。程序集版本号仍为 `1.0.0.0`，辨别现场版本应结合窗口标题、实际 EXE 路径、文件哈希及交付记录。
+当前维护入口是 `thinkbook-deploy/payload/source/EtherCATDemo/CSharpDemo.csproj`，Windows WinForms、.NET Framework 4.0 Client Profile、x64。使能保险版在应用代码基线 `ac636ff` 上继续修订；目录名仍沿用厂商 Demo，不表示里面还是原版。程序集版本号仍为 `1.0.0.0`，辨别现场版本应结合窗口标题、实际 EXE 路径、文件哈希及交付记录。
 
 | 项目 | 当前已知 | 仍需记录/确认 |
 | --- | --- | --- |
@@ -28,6 +28,9 @@
 | [DashboardWidgets.cs](../thinkbook-deploy/payload/source/EtherCATDemo/DashboardWidgets.cs) | 卡片和配色等界面控件 |
 | [Form1.Axis2.cs](../thinkbook-deploy/payload/source/EtherCATDemo/Form1.Axis2.cs) | 轴2输入、SDK 适配、状态基准、日志和停止处理 |
 | [Axis2Motion.cs](../thinkbook-deploy/payload/source/EtherCATDemo/Axis2Motion.cs) | 无 WinForms 依赖的轴2运动检查、相对目标计算与状态机 |
+| [OperationSafety.cs](../thinkbook-deploy/payload/source/EtherCATDemo/OperationSafety.cs) | 自动初始化、当前轴保险及急停锁存，无 WinForms/SDK 依赖 |
+| [Form1.OperationSafety.cs](../thinkbook-deploy/payload/source/EtherCATDemo/Form1.OperationSafety.cs) | SDK适配、Shown启动、保险守卫、全轴急停及点动捕获处理 |
+| [OperationSafetyTests.cs](../thinkbook-deploy/payload/source/EtherCATDemo/tests/OperationSafetyTests.cs) | 33项假适配器初始化与保险检查 |
 | [Axis2MotionTests.cs](../thinkbook-deploy/payload/source/EtherCATDemo/tests/Axis2MotionTests.cs) | 假适配器测试，无 SDK 加载 |
 | [UiSmoke.cs](../thinkbook-deploy/payload/source/EtherCATDemo/tests/UiSmoke.cs) | Windows 离线 UI 与输入回归，不打开控制卡 |
 
@@ -37,7 +40,7 @@
 
 ## 3. 轴2启动、停止与反馈语义
 
-一次轴2启动会检查：输入范围；四轴无运动或报警/限位状态；轴2使能；静止规划—编码器差不超过 100 计数；四从站数量；卡端比例；驱动电机代码、电子齿轮、CSP 模式、错误码与运行使能状态；抱闸延时读数和使能稳定时间；预检期间位置稳定及驱动/卡反馈一致；预检超时；目标 32 位范围。
+所有运动入口都先检查本次会话当前轴的人工保险及点击后的新使能反馈；读取失效或切换轴会撤销保险。一次轴2启动还会检查：输入范围；四轴无运动或报警/限位状态；轴2使能；静止规划—编码器差不超过 100 计数；四从站数量；卡端比例；驱动电机代码、电子齿轮、CSP 模式、错误码与运行使能状态；抱闸延时读数和使能稳定时间；预检期间位置稳定及驱动/卡反馈一致；预检超时；目标 32 位范围。
 
 检查通过后，用新读到的规划位置加本次增量，调用 `GA_SetTrapPosAndUpdate(2, ...)`。加减速沿用 `1 count/ms²`。上述检查发生在程序和通信层，不证明实际抱闸线路、承载能力和独立急停链已合格。
 
@@ -50,7 +53,9 @@
 - 反馈丢失时使本次圈数基准失效，旧累计值不继续显示为可信增量。
 - 规划完成的判定主要使用规划位置与运行位；它不等于独立测量的机械到位确认。
 
-**轴1、3、4是保留的旧路径**：JOG 起步仍会调用 `GA_AxisOn`，JOG/绝对定位的 SDK 返回码处理也没有全部提升到轴2同等程度；点动松开调用全轴停止。不要把轴2的完整预检承诺推广到其他三轴。这是下一轮维护的具体风险项，不是本次已完成的统一控制层。
+**轴1、3、4仍保留旧运动参数**，新增统一人工保险；JOG 起步不再调用使能，设置模式/参数/速度/启动和绝对定位的返回码均检查。点动松开、失去鼠标捕获或窗口失焦会请求全轴停止，点动反馈中断锁存急停。轴2的电子齿轮、驱动CSP与抱闸延时检查仍只适用于轴2。
+
+右上角急停先锁存保险，再请求全轴急停方式停止，保留伺服持力；不自动清控制器急停状态或断使能。轴2只记录外部停止请求，并等新的停止反馈释放原任务。成功返回不是机械停止证明；新鲜静止反馈和人工重新点击保险后的总线核验通过才恢复。启动0从站时仅尝试一次初始化，4站已就绪时复用，15秒未完成锁定失败。
 
 ## 4. 如何取证排障
 
@@ -72,7 +77,7 @@
 
 使用 [`build-dashboard.ps1`](../thinkbook-deploy/scripts/build-dashboard.ps1) 构建。每次输出包含完整 `app`、源码快照和验证结果，不改维护源码、不改运行中的程序、不调用设备。构建与离线检查不要求关闭正在运行的控制程序；真正切换控制程序时再由现场操作者停稳并正常关闭旧版本。
 
-当前已交付的输入修复版路径和哈希见根 README。其上一个四轴方向版为 `four-axis-lift-20261009-134342`，再早的圈数测试版为 `axis2-turns-20261009-122203`，均位于 ThinkBook 的 `C:\RobotArmDemo\releases\`。这些是历史交付目录，是否还存在应现场核对。
+当前已交付的使能保险版路径和哈希见根 README 及[使能保险版交付记录](verification/2026-10-09-enable-insurance.md)。输入修复版为 `four-axis-input-20261009-140000`。其上一个四轴方向版为 `four-axis-lift-20261009-134342`，再早的圈数测试版为 `axis2-turns-20261009-122203`，均位于 ThinkBook 的 `C:\RobotArmDemo\releases\`。这些是历史交付目录，是否还存在应现场核对。
 
 回滚需要整组保留 EXE 与三份 SDK DLL。不要从另一套示例中只替换一个同名 DLL，也不要用原始厂商 Demo 替代当前维护源码后继续声称通过了本版检查。
 
@@ -80,12 +85,12 @@
 
 | 待办 | 当前状态 | 完成证据 |
 | --- | --- | --- |
-| 输入修复版实际使用体验 | 待用户现场验收 | 版本明确的键盘输入、上升/下降和停止再启动记录 |
+| 使能保险版实际使用体验 | 待用户现场验收 | 版本明确的键盘输入、上升/下降和停止再启动记录 |
 | 四轴实体映射和方向 | 轴2功能/方向已获现场确认，其余需形成表格 | 驱动、线缆、关节对应记录 |
 | 丝杆传动与机械紧固复查 | 用户反馈已修复，未另做机构测量 | 现场检修/检查记录 |
 | 导程、传动比、上下限与零点 | 未完整标定 | 有单位、有测量方法的记录 |
 | 抱闸、急停/STO、限位及独立断能 | 无完整交接验收记录 | 由现场负责人员验证的记录 |
-| 轴1、3、4控制路径统一 | 未实施 | 返回码、预检、停止范围和状态恢复测试 |
+| 轴1、3、4控制路径统一 | 已加入保险与返回码检查、点动捕获/失联停止；驱动参数专用预检待补 | 离线33项保险检查及22组UI检查，实机仍待验收 |
 | 设备参数与旧控制器备份 | 尚未形成仓库内完整基线 | 经授权导出的参数及版本清单 |
 
 这些待办不授权接手者远程自动运动或改变接线。实机检查应有现场操作者、明确对象和对应授权；不要把只读检查、模拟测试或用户的一次成功操作扩大成完整安全验收。

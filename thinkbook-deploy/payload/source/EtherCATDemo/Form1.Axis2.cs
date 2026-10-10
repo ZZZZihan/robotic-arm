@@ -148,7 +148,7 @@ namespace CSharpDemo
             axis2Rpm.ValueChanged += delegate { RefreshAxis2Controls(); };
             axis2Turns.TextChanged += delegate { RefreshAxis2Controls(); };
             axis2Rpm.TextChanged += delegate { RefreshAxis2Controls(); };
-            comboBoxAxisSel.SelectedIndexChanged += delegate { RefreshAxis2Controls(); };
+            comboBoxAxisSel.SelectedIndexChanged += delegate { if (operationSafety != null) operationSafety.Invalidate(); RefreshAxis2Controls(); };
             FormClosing += Axis2FormClosing;
             Deactivate += delegate { if (axis2Motion.Active) StopAxis2("窗口失去焦点，停止轴2"); };
             RefreshAxis2Controls();
@@ -203,6 +203,7 @@ namespace CSharpDemo
         private void StartAxis2(int direction)
         {
             if (!cardOpened || axis2Motion.Active) return;
+            if (!PrepareMotion()) return;
             try
             {
                 decimal turns, rpm; string inputError;
@@ -237,6 +238,7 @@ namespace CSharpDemo
                     ShowResult("状态读取已恢复；请检查当前使能与总线状态。", false);
                 }
                 UpdateDashboardSample(status);
+                if (legacyJogActive && operationSafety.AuthorizedAxis == 0) EmergencyStopFromDashboard();
                 if ((snapshot.Status[1] & Axis2Motion.EnabledBit) != 0)
                 {
                     if (!enabledStable.IsRunning) enabledStable.Start();
@@ -268,6 +270,7 @@ namespace CSharpDemo
                 axis2BaselineValid = false;
                 feedbackLabel.Text = "反馈无效：" + error.Message;
                 InvalidateDashboardSample();
+                if (legacyJogActive) EmergencyStopFromDashboard();
                 if (axis2Motion.Active && !stoppingOnError)
                 {
                     stoppingOnError = true;
@@ -281,6 +284,7 @@ namespace CSharpDemo
 
         private void Axis2FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (legacyJogActive) { StopLegacyJog(); e.Cancel = true; return; }
             if (axis2Motion.Active)
             {
                 StopAxis2("关闭窗口前停止轴2");
