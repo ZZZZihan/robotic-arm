@@ -36,9 +36,9 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
           if (!(Test-Path -LiteralPath $csc)) { throw '.NET Framework C# compiler missing.' }
-          $source = 'thinkbook-deploy/payload/source/EtherCATDemo'
+          $source = Join-Path $env:GITHUB_WORKSPACE 'thinkbook-deploy\payload\source\EtherCATDemo'
           $exe = Join-Path $env:RUNNER_TEMP 'CartesianCoordinatesTests.exe'
-          & $csc /nologo /langversion:4 /warnaserror+ /platform:x64 /target:exe "/out:$exe" "$source/CartesianCoordinates.cs" "$source/tests/CartesianCoordinatesTests.cs"
+          & $csc /nologo /langversion:4 /warnaserror+ /platform:x64 /target:exe "/out:$exe" (Join-Path $source 'CartesianCoordinates.cs') (Join-Path $source 'tests\CartesianCoordinatesTests.cs')
           if ($LASTEXITCODE -ne 0) { throw 'Coordinate test compilation failed.' }
           & $exe
           if ($LASTEXITCODE -ne 0) { throw 'Coordinate tests failed.' }
