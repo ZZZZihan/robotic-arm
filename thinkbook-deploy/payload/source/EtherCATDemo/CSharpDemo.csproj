@@ -91,6 +91,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Axis2Motion.cs" />
+    <Compile Include="CartesianCoordinates.cs" />
     <Compile Include="OperationSafety.cs" />
     <Compile Include="Form1.OperationSafety.cs" />
     <Compile Include="Form1.Axis2.cs" />

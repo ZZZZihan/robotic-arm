@@ -68,7 +68,13 @@ $operationOutput = & (Join-Path $tests 'OperationSafetyTests.exe')
 if ($LASTEXITCODE -ne 0) { $operationOutput | Write-Output; throw 'Operation safety tests failed.' }
 $operationOutput | Write-Output
 $operationOutput | Set-Content -LiteralPath (Join-Path $tests 'operation-results.txt') -Encoding UTF8
-& $csc /nologo /platform:x64 /target:exe "/out:$tests\UiSmoke.exe" /reference:System.dll /reference:System.Core.dll /reference:System.Data.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll "/reference:$app\MultiCardCS.dll" "/reference:$app\MultiCardCLR.dll" (Join-Path $source 'Form1.cs') (Join-Path $source 'Form1.Designer.cs') (Join-Path $source 'Form1.Axis2.cs') (Join-Path $source 'Form1.Dashboard.cs') (Join-Path $source 'Form1.OperationSafety.cs') (Join-Path $source 'OperationSafety.cs') (Join-Path $source 'DashboardWidgets.cs') (Join-Path $source 'Axis2Motion.cs') (Join-Path $source 'tests\UiSmoke.cs')
+& $csc /nologo /langversion:4 /platform:x64 /target:exe "/out:$tests\CartesianCoordinatesTests.exe" (Join-Path $source 'CartesianCoordinates.cs') (Join-Path $source 'tests\CartesianCoordinatesTests.cs')
+if ($LASTEXITCODE -ne 0) { throw 'Cartesian coordinate test compilation failed.' }
+$cartesianOutput = & (Join-Path $tests 'CartesianCoordinatesTests.exe')
+if ($LASTEXITCODE -ne 0) { $cartesianOutput | Write-Output; throw 'Cartesian coordinate tests failed.' }
+$cartesianOutput | Write-Output
+$cartesianOutput | Set-Content -LiteralPath (Join-Path $tests 'cartesian-results.txt') -Encoding UTF8
+& $csc /nologo /platform:x64 /target:exe "/out:$tests\UiSmoke.exe" /reference:System.dll /reference:System.Core.dll /reference:System.Data.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll "/reference:$app\MultiCardCS.dll" "/reference:$app\MultiCardCLR.dll" (Join-Path $source 'Form1.cs') (Join-Path $source 'Form1.Designer.cs') (Join-Path $source 'Form1.Axis2.cs') (Join-Path $source 'Form1.Dashboard.cs') (Join-Path $source 'Form1.OperationSafety.cs') (Join-Path $source 'OperationSafety.cs') (Join-Path $source 'DashboardWidgets.cs') (Join-Path $source 'Axis2Motion.cs') (Join-Path $source 'CartesianCoordinates.cs') (Join-Path $source 'tests\UiSmoke.cs')
 if ($LASTEXITCODE -ne 0) { throw 'UI test compilation failed.' }
 $uiOutput = & (Join-Path $tests 'UiSmoke.exe') (Join-Path $tests 'ui-smoke.png')
 if ($LASTEXITCODE -ne 0) { $uiOutput | Write-Output; throw 'Offline UI checks failed.' }
@@ -83,6 +89,7 @@ $result = [ordered]@{
     operatorAppStarted = $false
     behaviorChecks = @($behaviorOutput | Where-Object { $_ -match '^PASS ' -and $_ -notmatch '^PASS [0-9]+ behavior tests' }).Count
     operationChecks = @($operationOutput | Where-Object { $_ -match '^PASS SAFETY ' -and $_ -notmatch 'operation safety behavior tests' }).Count
+    cartesianChecks = @($cartesianOutput | Where-Object { $_ -match '^PASS CARTESIAN ' -and $_ -notmatch '^PASS CARTESIAN [0-9]+ checks;' }).Count
     uiChecks = @($uiOutput | Where-Object { $_ -match '^PASS UI ' -and $_ -notmatch '^PASS UI verification;' }).Count
     sdk = $sdkEntries | Select-Object path,sha256
 }

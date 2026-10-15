@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "status": "pending_field_calibration",
+  "recordPurpose": "待现场测量和填写的记录，不是 App 自动加载的配置。null 表示未知，不得按零或默认传动比补齐。",
+  "automaticApplicationLoading": false,
+  "mechanicalModel": null,
+  "units": {
+    "length": "mm",
+    "angle": "degrees",
+    "encoder": "count"
+  },
+  "baseConvention": {
+    "frameId": "base",
+    "handedness": "right",
+    "positiveX": "设备约定的工作正前方",
+    "positiveY": "从设备朝 +X 方向看时的左侧",
+    "positiveZ": "竖直向上",
+    "originRule": "固定底座上可重复标记的基准点",
+    "markedOriginReference": null,
+    "markedPositiveXReference": null,
+    "markingEvidence": null,
+    "calibrated": false
+  },
+  "workFrame": {
+    "frameId": "work",
+    "toFrame": "base",
+    "originMm": null,
+    "xAxisInBase": null,
+    "yAxisInBase": null,
+    "zAxisInBase": null,
+    "measurementEvidence": null,
+    "calibrated": false
+  },
+  "toolFrame": {
+    "frameId": "tool",
+    "mountingReferenceFrame": null,
+    "tcpDefinition": null,
+    "tcpOffsetFromMountingReferenceMm": null,
+    "toolXAxisInMountingReference": null,
+    "toolYAxisInMountingReference": null,
+    "toolZAxisInMountingReference": null,
+    "measurementEvidence": null,
+    "calibrated": false
+  },
+  "axes": [
+    {
+      "softwareAxis": 1,
+      "physicalJoint": null,
+      "jointType": null,
+      "knownEvidence": null,
+      "calibration": {
+        "countsPerMotorRevolution": null,
+        "motorRevolutionsPerJointRevolution": null,
+        "motorRevolutionsPerScrewRevolution": null,
+        "leadMmPerScrewRevolution": null,
+        "referenceEncoderCount": null,
+        "positiveDirection": null,
+        "referenceDegrees": null,
+        "referenceMm": null
+      },
+      "jointAxisInParent": null,
+      "parentToJointOriginMm": null,
+      "usableRange": null,
+      "measurementEvidence": null,
+      "calibrated": false
+    },
+    {
+      "softwareAxis": 2,
+      "physicalJoint": null,
+      "jointType": null,
+      "knownEvidence": {
+        "role": "screw_lift",
+        "positiveMotion": "up",
+        "negativeMotion": "down",
+        "historicalExpectedCountsPerMotorRevolution": 262144,
+        "source": "docs/HANDOFF.md#1-版本与配置; README.md#5-轴2的单位和操作",
+        "scope": "仓库记录的既有现场反馈和程序预期，未在本次重新测量；不能推广至其他轴或据此计算毫米。"
+      },
+      "calibration": {
+        "countsPerMotorRevolution": null,
+        "motorRevolutionsPerJointRevolution": null,
+        "motorRevolutionsPerScrewRevolution": null,
+        "leadMmPerScrewRevolution": null,
+        "referenceEncoderCount": null,
+        "positiveDirection": null,
+        "referenceDegrees": null,
+        "referenceMm": null
+      },
+      "jointAxisInParent": null,
+      "parentToJointOriginMm": null,
+      "usableRange": null,
+      "measurementEvidence": null,
+      "calibrated": false
+    },
+    {
+      "softwareAxis": 3,
+      "physicalJoint": null,
+      "jointType": null,
+      "knownEvidence": null,
+      "calibration": {
+        "countsPerMotorRevolution": null,
+        "motorRevolutionsPerJointRevolution": null,
+        "motorRevolutionsPerScrewRevolution": null,
+        "leadMmPerScrewRevolution": null,
+        "referenceEncoderCount": null,
+        "positiveDirection": null,
+        "referenceDegrees": null,
+        "referenceMm": null
+      },
+      "jointAxisInParent": null,
+      "parentToJointOriginMm": null,
+      "usableRange": null,
+      "measurementEvidence": null,
+      "calibrated": false
+    },
+    {
+      "softwareAxis": 4,
+      "physicalJoint": null,
+      "jointType": null,
+      "knownEvidence": null,
+      "calibration": {
+        "countsPerMotorRevolution": null,
+        "motorRevolutionsPerJointRevolution": null,
+        "motorRevolutionsPerScrewRevolution": null,
+        "leadMmPerScrewRevolution": null,
+        "referenceEncoderCount": null,
+        "positiveDirection": null,
+        "referenceDegrees": null,
+        "referenceMm": null
+      },
+      "jointAxisInParent": null,
+      "parentToJointOriginMm": null,
+      "usableRange": null,
+      "measurementEvidence": null,
+      "calibrated": false
+    }
+  ],
+  "mechanicalGeometry": {
+    "jointOrder": null,
+    "linkLengthsMm": null,
+    "couplingDescription": null,
+    "kinematicModelEvidence": null
+  },
+  "calibrationRecord": {
+    "measuredAt": null,
+    "measuredBy": null,
+    "method": null,
+    "controllerParameterVersion": null,
+    "independentMeasurementPoints": null,
+    "applicableRange": null,
+    "evidence": null
+  }
+}

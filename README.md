@@ -1,6 +1,6 @@
 # 机械臂四轴操作台 · Robotic Arm Lab
 
-**交接入口，更新于 2026-10-10。** 当前维护的是 Windows 上的 C# WinForms 四轴操作台，通过博派 EtherCAT 控制卡控制四个软件轴。当前源码为“使能保险版”，包含 10 月 10 日合并审查时补充的点动关窗保护，已重新完成 Windows 离线构建和回归；原应用代码基线是 [`ac636ff`](https://github.com/ZZZZihan/robotic-arm/commit/ac636ff8fe91201a5976f294febd556085f8bbb4)。10 月 10 日 13:30（北京时间）已将源码提交 [`1d66dd4`](https://github.com/ZZZZihan/robotic-arm/commit/1d66dd4388e1f0e4d5e8f3d73be2c96eedddf80a) 对应的已测试程序交付到 ThinkBook，并更新桌面入口；本次交付未启动 App，最新版本的实机使用仍待操作者验收。
+**交接基线为 2026-10-10；坐标基础更新于 2026-10-15。** 当前维护的是 Windows 上的 C# WinForms 四轴操作台，通过博派 EtherCAT 控制卡控制四个软件轴。当前源码为“使能保险版”，包含 10 月 10 日合并审查时补充的点动关窗保护，已重新完成 Windows 离线构建和回归；原应用代码基线是 [`ac636ff`](https://github.com/ZZZZihan/robotic-arm/commit/ac636ff8fe91201a5976f294febd556085f8bbb4)。10 月 10 日 13:30（北京时间）已将源码提交 [`1d66dd4`](https://github.com/ZZZZihan/robotic-arm/commit/1d66dd4388e1f0e4d5e8f3d73be2c96eedddf80a) 对应的已测试程序交付到 ThinkBook，并更新桌面入口；本次交付未启动 App，最新版本的实机使用仍待操作者验收。
 
 轴2是丝杆升降轴，现场操作者已确认 **正向向上、反向向下**。界面用电机圈数控制轴2的相对移动；圈数和转速支持直接键入、Ctrl+A 重填和上下按钮微调。轴1、3、4保留点动和原来的绝对定位入口。
 
@@ -14,6 +14,7 @@
 | --- | --- |
 | 先理解当前版本、构建和运行 | 本 README |
 | 查看现场已知配置、程序结构、排障和待办 | [交接说明](docs/HANDOFF.md) |
+| 建立基座 XYZ、工作坐标与工具坐标约定 | [笛卡尔坐标系与待标定参数](docs/CARTESIAN_COORDINATES.md) |
 | 查看具体界面用法和轴2修复记录 | [操作台使用说明](thinkbook-deploy/payload/source/EtherCATDemo/README-dashboard.md) |
 | 查控制卡、SV630N、SDK 与原始示例 | [资料目录与手册导航](materials/README.md) |
 | 复核已执行的构建、测试及现场反馈边界 | [ThinkBook 最新交付记录](docs/verification/2026-10-10-thinkbook-handoff.md)、[合并审查与回归记录](docs/verification/2026-10-10-merge-review.md)、[使能保险版历史交付记录](docs/verification/2026-10-09-enable-insurance.md)、[输入修复版历史验证记录](docs/verification/2026-10-09-dashboard.md) |
@@ -33,6 +34,7 @@
 | ThinkBook 程序文件与桌面入口 | 新版文件及快捷方式已更新，10 月 9 日旧版保留 | 文件哈希与快捷方式回读通过；部署前后 App 进程和 UDP 60000 监听均为 0，未启动 App |
 | 使能保险版现场体验 | 等待操作者使用该版本确认 | 尚未完成最新版本的实机验收 |
 | 毫米换算、软限位、回零与完整机械标定 | 未完成 | 不得把电机圈数当成升降毫米 |
+| 笛卡尔坐标基础 | 已加入右手 XYZ 约定、刚体坐标变换和显式单轴标定换算 | 纯数学模块；机械模型和现场标定未知，未接入实际末端 XYZ 或运动控制 |
 
 接手当天仍需确认实际运行的程序和设备状态。9 月的网页诊断工具、早期圈数测试版和最新桌面操作台是不同版本，不能用旧报告替代当日状态。
 
@@ -55,7 +57,7 @@ cd robotic-arm
 powershell.exe -NoProfile -File .\thinkbook-deploy\scripts\build-dashboard.ps1
 ```
 
-脚本只做以下事情：校验 SDK、复制维护源码到一个新输出目录、构建操作台、执行 20 项运动核心检查、33 项初始化与保险检查和 26 组离线界面检查。它**不会启动操作者 App、连接控制卡、修改网卡或更新桌面快捷方式**。
+脚本只做以下事情：校验 SDK、复制维护源码到一个新输出目录、构建操作台、执行运动核心、初始化与保险、笛卡尔坐标数学和离线界面检查。坐标数学测试也可通过[独立测试入口](tests/README.md)在本机运行。它**不会启动操作者 App、连接控制卡、修改网卡或更新桌面快捷方式**。
 
 默认输出目录是 `.artifacts\dashboard-<时间戳>\`，包含：
 
@@ -166,4 +168,4 @@ thinkbook-deploy/payload/reference/VCppDemo/  原有 C++ 参考源码
 4. 确认导程和传动比后再设计毫米单位与软限位；不要先改换算常数试碰行程。
 5. 后续代码改动沿用独立发布目录、SDK 校验和离线回归。实机动作需另外确认现场条件与操作者授权。
 
-**尚不具备的能力：**完整机械标定、笛卡尔坐标控制、联动轨迹实机验收、可靠的独立安全控制器。不要把此手动操作台当成已经验收的生产机器人控制系统。
+**尚不具备的能力：**完整机械标定、四轴反馈到末端 XYZ 的正运动学、笛卡尔坐标控制、联动轨迹实机验收、可靠的独立安全控制器。新坐标模块只建立数学约定和变换，待测参数保留为 `null`，不会把未知坐标当成 `(0,0,0)`。不要把此手动操作台当成已经验收的生产机器人控制系统。
