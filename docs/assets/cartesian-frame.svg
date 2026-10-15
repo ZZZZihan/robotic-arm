@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-labelledby="title description">
+  <title id="title">基座右手笛卡尔坐标系方向约定</title>
+  <desc id="description">从待现场标记的原点 O 出发，正 X 指向设备约定的工作正前方，正 Y 指向从设备朝正 X 看时的左侧，正 Z 竖直向上。本图为方向示意，不表示机器人结构或实机读数。</desc>
+  <defs>
+    <style>
+      text { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+      .title { fill: #1d2c3b; font-size: 28px; font-weight: 600; }
+      .subtitle { fill: #637283; font-size: 16px; }
+      .axis-title { font-size: 22px; font-weight: 600; }
+      .axis-note { font-size: 16px; }
+      .body { fill: #37495a; font-size: 17px; }
+      .muted { fill: #6b7886; font-size: 15px; }
+      .section { fill: #24394b; font-size: 18px; font-weight: 600; }
+    </style>
+  </defs>
+  <rect width="1100" height="660" rx="18" fill="#f6f8fa"/>
+  <rect x="28" y="28" width="1044" height="604" rx="14" fill="#fff" stroke="#dce3e9"/>
+  <text x="64" y="83" class="title">基座笛卡尔坐标系 · base</text>
+  <text x="65" y="115" class="subtitle">右手系方向示意 · 长度 mm · 角度 degrees</text>
+
+  <path d="M 263 306 L 397 354 L 263 402 L 129 354 Z" fill="#f0f4f7" stroke="#d9e2e8" stroke-dasharray="5 5"/>
+  <path d="M 263 354 L 171 320 M 263 354 L 353 320 M 263 354 L 263 447" fill="none" stroke="#d4dde5" stroke-width="2" stroke-dasharray="6 7"/>
+  <path d="M 263 354 L 565 467" fill="none" stroke="#c96528" stroke-width="5"/>
+  <path d="M 263 354 L 85 431" fill="none" stroke="#16856b" stroke-width="5"/>
+  <path d="M 263 354 L 263 168" fill="none" stroke="#2569b1" stroke-width="5"/>
+  <path d="M 576 471 L 545 471 L 553 451 Z" fill="#c96528"/>
+  <path d="M 76 435 L 96 415 L 104 435 Z" fill="#16856b"/>
+  <path d="M 263 159 L 250 187 L 276 187 Z" fill="#2569b1"/>
+  <circle cx="263" cy="354" r="8" fill="#253b4d" stroke="#fff" stroke-width="3"/>
+
+  <text x="285" y="185" fill="#2569b1" class="axis-title">+Z</text>
+  <text x="285" y="213" fill="#2569b1" class="axis-note">竖直向上</text>
+  <text x="495" y="374" fill="#c96528" class="axis-title">+X</text>
+  <text x="429" y="402" fill="#c96528" class="axis-note">设备工作正前方</text>
+  <text x="73" y="476" fill="#16856b" class="axis-title">+Y</text>
+  <text x="73" y="505" fill="#16856b" class="axis-note">朝 +X 看时的左侧</text>
+  <text x="279" y="350" class="section">O</text>
+  <path d="M 275 369 L 330 403 L 330 498" fill="none" stroke="#a8b5c2" stroke-width="1.5"/>
+  <text x="293" y="525" class="body">固定底座上的基准点</text>
+  <text x="293" y="552" class="muted">具体点位待现场标记</text>
+
+  <line x1="646" y1="161" x2="646" y2="558" stroke="#e2e8ee"/>
+  <rect x="684" y="165" width="344" height="67" rx="9" fill="#fff4df"/>
+  <text x="705" y="192" fill="#8a5c11" font-size="17" font-weight="600">实机坐标尚未标定</text>
+  <text x="705" y="216" fill="#8a5c11" font-size="14">原点及 +X 实体参照需现场记录</text>
+  <text x="687" y="281" class="section">右手规则</text>
+  <text x="687" y="314" class="body">X × Y = Z</text>
+  <text x="687" y="362" class="section">观察方向</text>
+  <text x="687" y="394" class="body">从设备朝 +X 方向看：</text>
+  <text x="687" y="422" class="body">左侧为 +Y，竖直上方为 +Z。</text>
+  <text x="687" y="474" class="section">图示范围</text>
+  <text x="687" y="506" class="body">仅表达坐标方向与原点约定。</text>
+  <text x="687" y="534" class="body">不表示机构结构或实机读数。</text>
+  <text x="65" y="605" class="muted">设备方向固定，不随操作者站位或画面视角改变。未知机械参数不生成 XYZ。</text>
+</svg>

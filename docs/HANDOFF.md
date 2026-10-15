@@ -1,6 +1,6 @@
 # 机械臂操作台交接说明
 
-更新于 2026-10-10。主入口是[根目录 README](../README.md)。本文描述当前维护代码和已记录的现场反馈，不代表接手当天的驱动状态。
+交接基线为 2026-10-10，坐标基础补充于 2026-10-15。主入口是[根目录 README](../README.md)。本文描述当前维护代码和已记录的现场反馈，不代表接手当天的驱动状态。
 
 ## 1. 版本与配置
 
@@ -28,6 +28,7 @@
 | [DashboardWidgets.cs](../thinkbook-deploy/payload/source/EtherCATDemo/DashboardWidgets.cs) | 卡片和配色等界面控件 |
 | [Form1.Axis2.cs](../thinkbook-deploy/payload/source/EtherCATDemo/Form1.Axis2.cs) | 轴2输入、SDK 适配、状态基准、日志和停止处理 |
 | [Axis2Motion.cs](../thinkbook-deploy/payload/source/EtherCATDemo/Axis2Motion.cs) | 无 WinForms 依赖的轴2运动检查、相对目标计算与状态机 |
+| [CartesianCoordinates.cs](../thinkbook-deploy/payload/source/EtherCATDemo/CartesianCoordinates.cs) | 无 SDK/WinForms 依赖的坐标点、右手刚体变换和显式单轴标定换算；不含机械臂正逆运动学 |
 | [OperationSafety.cs](../thinkbook-deploy/payload/source/EtherCATDemo/OperationSafety.cs) | 自动初始化、当前轴保险及急停锁存，无 WinForms/SDK 依赖 |
 | [Form1.OperationSafety.cs](../thinkbook-deploy/payload/source/EtherCATDemo/Form1.OperationSafety.cs) | SDK适配、Shown启动、保险守卫、全轴急停及点动捕获处理 |
 | [OperationSafetyTests.cs](../thinkbook-deploy/payload/source/EtherCATDemo/tests/OperationSafetyTests.cs) | 33项假适配器初始化与保险检查 |
@@ -90,6 +91,8 @@
 本次交接标签 `handoff-2026-10-10` 固定交付快照；标签包含交接说明及交付证据，部署程序的源码提交仍为 `1d66dd4`。仓库继续供接手人开发维护。接手时先核对标签、当前 `main`、实际 EXE 与交付记录，再沿用独立发布目录和离线回归处理后续修改。
 
 ## 6. 接手时需补齐的现场清单
+
+2026-10-15 已增加[笛卡尔坐标约定与采集说明](CARTESIAN_COORDINATES.md)：X 前、Y 左、Z 上，单位 mm/deg；基座实物原点、机械拓扑、连杆几何、传动与工具偏置仍待测。待测记录在 [cartesian.pending.json](calibration/cartesian.pending.json)，不由 App 自动加载。当前界面继续显示原始轴反馈；不要将新数学模块视为已经完成实际 XYZ 显示、运动控制或 ThinkBook 部署。
 
 | 待办 | 当前状态 | 完成证据 |
 | --- | --- | --- |

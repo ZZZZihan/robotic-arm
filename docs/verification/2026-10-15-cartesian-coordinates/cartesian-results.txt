@@ -1,0 +1,28 @@
+PASS CARTESIAN identity preserves all coordinates and frame names
+PASS CARTESIAN pure translation is in target-frame millimetres
+PASS CARTESIAN positive Z ninety degrees maps positive X to positive Y
+PASS CARTESIAN negative and multiple yaw turns keep degree convention
+PASS CARTESIAN general three-dimensional axes match independent Rodrigues reference
+PASS CARTESIAN inverse swaps frames and agrees with inverse-point operation
+PASS CARTESIAN general inverse round trip covers signed coordinates and nonzero origin
+PASS CARTESIAN Then applies this first and next second with noncommuting translations
+PASS CARTESIAN general transform followed by inverse composes to identity
+PASS CARTESIAN mismatched and case-different frame chains refuse
+PASS CARTESIAN blank and padded frame names refuse
+PASS CARTESIAN null origin axes points and next transform refuse
+PASS CARTESIAN scaled and zero axes refuse instead of silently normalizing
+PASS CARTESIAN nonorthogonal duplicate and left-handed unit axes refuse
+PASS CARTESIAN nonfinite points directions and yaw refuse on every component
+PASS CARTESIAN finite transform inputs that overflow output refuse
+PASS CARTESIAN inverse origin overflow refuses instead of publishing infinity
+PASS CARTESIAN rotary reference count zero and explicit direction produce degrees
+PASS CARTESIAN rotary motor to joint ratio is applied and multiple turns remain unwrapped
+PASS CARTESIAN linear counts lead gearing zero and sign produce millimetres
+PASS CARTESIAN encoder subtraction widens before both Int32 boundary differences
+PASS CARTESIAN missing calibration refuses and clears previous successful coordinate
+PASS CARTESIAN calibrated zero remains a valid coordinate
+PASS CARTESIAN zero negative and nonfinite counts or ratios refuse
+PASS CARTESIAN only positive or negative one directions and finite references are allowed
+PASS CARTESIAN extreme ratios that underflow or overflow unit scale refuse
+PASS CARTESIAN conversion overflow refuses and Try clears previous output
+PASS CARTESIAN 27 checks; pure math only, no controller connection.

@@ -1,0 +1,28 @@
+{
+  "createdAtUtc": "2026-10-15T05:35:47.819899+00:00",
+  "validation": "Actual C# source compiled with language version 4 and executed on .NET 8; synthetic inputs only",
+  "platform": "macOS arm64",
+  "sdkVersion": "8.0.426",
+  "runtimeVersion": "8.0.32",
+  "cartesianChecks": 27,
+  "controllerConnected": false,
+  "operatorAppStarted": false,
+  "physicalCalibrationCompleted": false,
+  "windowsFullDashboardBuildExecuted": false,
+  "independentCoreReview": "No blocking finding",
+  "independentBuildIntegrationReview": "No blocking finding",
+  "files": [
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/CartesianCoordinates.cs",
+      "sha256": "7cee08c961b6ce39e2ad32a9980e4575708ff181e8601bc3e266e5c9b4ef2770"
+    },
+    {
+      "path": "thinkbook-deploy/payload/source/EtherCATDemo/tests/CartesianCoordinatesTests.cs",
+      "sha256": "99a4f9b917dd44928d3db3941648ee990c15d63b7ea8225f5034a216a6bfb670"
+    },
+    {
+      "path": "tests/cartesian-portable/CartesianCoordinatesTests.csproj",
+      "sha256": "bf1aeff81b1ba012136b2212a3b63ce5db37ea826d4a996b4196a088be56ea30"
+    }
+  ]
+}

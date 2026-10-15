@@ -8,10 +8,28 @@ powershell.exe -NoProfile -File .\thinkbook-deploy\scripts\build-dashboard.ps1
 
 | 检查 | 当前数量 | 环境与作用 |
 | --- | --- | --- |
-| `Axis2MotionTests.cs` | 19 项 | Windows x64 C# 编译器；假适配器，不加载 SDK，不连接控制卡 |
-| `UiSmoke.cs` | 15 组 | Windows WinForms 和固定版本 SDK；不打开控制卡，检查布局、选择、状态及输入行为 |
+| `Axis2MotionTests.cs` | 20 项 | Windows x64 C# 编译器；假适配器，不加载 SDK，不连接控制卡 |
+| `OperationSafetyTests.cs` | 33 项 | Windows x64 C# 编译器；假适配器，检查初始化、保险与停止确认 |
+| `CartesianCoordinatesTests.cs` | 27 组 | 纯坐标变换与显式标定换算；不加载 SDK，不读取实际机械参数 |
+| `UiSmoke.cs` | 26 组 | Windows WinForms 和固定版本 SDK；不打开控制卡，检查布局、选择、状态及输入行为 |
 
 每次输出保存行为测试文本、UI 测试文本、界面截图和 `verification-result.json`。构建脚本会使用新目录，既不启动操作者 App，也不覆盖已运行的版本。新增加功能时应检查真实用户关心的行为，例如文本框逐步输入和停止后再次启动，而不只给控件属性直接赋值。
+
+坐标检查另存为 `cartesian-results.txt`，结果 JSON 中计数为 `cartesianChecks`。
+
+## 坐标数学独立检查
+
+Mac/Linux/Windows 安装 .NET 8 SDK 后，在仓库根目录执行：
+
+```sh
+dotnet run --project tests/cartesian-portable/CartesianCoordinatesTests.csproj --configuration Release
+```
+
+该项目直接编译维护版的 `CartesianCoordinates.cs` 和同一份 C# 测试，固定 C# 4 语法，无外部 NuGet 包。覆盖正反变换、三维轴基、右手性、变换顺序、缺失标定及计数/毫米/角度的边界；示例全部是合成数据，不对应真实机械参数。未知标定的结果为 `null`，不会退化成零坐标。
+
+这项检查验证纯 C# 源码在 .NET 8 上的数学行为，不能代替 Windows/.NET Framework 4.0 Client Profile 操作台构建与 UI 检查。完整 Windows 构建仍使用上面的 `build-dashboard.ps1`。坐标模块没有连接现有运动入口，不执行初始化、使能、清零或任何运动命令。
+
+已执行结果见 [2026-10-15 坐标验证记录](../docs/verification/2026-10-15-cartesian-coordinates.md)。PR 中的 `Windows .NET Framework coordinate tests` 只运行同一套数学测试，不能替代完整操作台构建。
 
 ## 记录要求
 
